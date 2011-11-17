@@ -21,7 +21,7 @@ fi
 #
 # Set up shop someplace isolated & clean house.
 #
-find /private/tmp -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
+find /private/tmp -mtime +7 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
 JAIL="/private/tmp/build-`uuidgen`"
 echo "Going to work in $JAIL"
 rm -rf $JAIL 2>/dev/null
