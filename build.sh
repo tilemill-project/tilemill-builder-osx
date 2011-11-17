@@ -242,7 +242,7 @@ echo "Testing TileMill startup..."
 cd $JAIL/tilemill
 ./index.js 2>/dev/null 1>/dev/null &
 pid=$!
-sleep 3
+sleep 5
 if [ -z "`curl -s http://localhost:8889 | grep TileMill`" ]; then
   echo "Unable to start TileMill."
   exit 1
@@ -255,19 +255,28 @@ kill $pid
 #
 echo "Building TileMill Mac app..."
 
+# unset compiler; use Xcode-specified
+export CC=
+export CXX=
+
 cd $JAIL/tilemill/platforms/osx
 make clean
 make package
 
 commit=`git reflog show HEAD | sed -n '1p' | awk '{ print $1 }'`
-old_version=`defaults read $( pwd )/tilemill-Info CFBundleShortVersionString`
-dev_version="$old_version-$commit"
+while [ -z $last_tag ]; do
+  revision="HEAD"$carats
+  last_tag=`git tag --contains $revision`
+  carats=$carats"^"
+done
+dev_version="$last_tag-$commit"
 echo "Updating bundle with version $dev_version"
-defaults write $( pwd )/build/Release/TileMill.app/Contents/Info CFBundleShortVersionString $dev_version
+defaults write `pwd`/build/Release/TileMill.app/Contents/Info CFBundleShortVersionString $dev_version
 
 echo "Creating zip archive of Mac app..."
 make zip
 mv TileMill.zip $JAIL/TileMill-$dev_version.zip
+echo "Created TileMill-$dev_version.zip of `stat -f %z TileMill-$dev_version.zip` bytes in size."
 
 #
 # Close it out.
