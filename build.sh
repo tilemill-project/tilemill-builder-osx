@@ -107,7 +107,7 @@ echo "Building Mapnik SDK..."
 
 cd $JAIL
 rm -rf mapnik 2>/dev/null
-git clone git://github.com/mapnik/mapnik.git -b macbinary-tilemill mapnik
+git clone --depth=1 https://github.com/mapnik/mapnik.git -b macbinary-tilemill mapnik
 cd mapnik
 mkdir osx
 cd osx
@@ -136,7 +136,7 @@ echo "Building TileMill..."
 
 cd $JAIL
 rm -rf tilemill 2>/dev/null
-git clone git@github.com:mapbox/tilemill.git
+git clone --depth=1 https://github.com/mapbox/tilemill.git tilemill
 cd tilemill
 
 export CORE_CXXFLAGS="-O3 -arch x86_64 -arch i386 -mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk"
