@@ -21,12 +21,16 @@ fi
 #
 # Set up shop someplace isolated & clean house.
 #
-#find /private/tmp -name build-\* -type d | xargs rm -rf
+find /private/tmp -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
 JAIL="/private/tmp/build-`uuidgen`"
 echo "Going to work in $JAIL"
 rm -rf $JAIL 2>/dev/null
 mkdir -p $JAIL/bin
 cd $JAIL
+
+# default to Clang
+export CC=clang
+export CXX=clang++
 
 #
 # Build & fatten Node.js.
@@ -38,7 +42,7 @@ mkdir node
 cd node
 
 echo "Building Node..."
-curl -s http://nodejs.org/dist/node-$NODE_VERSION.tar.gz > node-$NODE_VERSION.tar.gz
+curl -# http://nodejs.org/dist/node-$NODE_VERSION.tar.gz > node-$NODE_VERSION.tar.gz
 tar xf node-$NODE_VERSION.tar.gz
 cd node-$NODE_VERSION
 # build i386
@@ -71,7 +75,7 @@ echo "Dual-arch Node at $JAIL/bin/node"
 echo "Checking for required global modules..."
 
 SEARCH_PATHS="/usr/local/lib/node_modules /usr/local/lib/node `node -e "require.paths" | sed -e 's/^\[//' -e 's/\]$//' -e 's/,//'`"
-MODULES="expresso jshint npm wafadmin"
+MODULES="jshint npm wafadmin"
 proper_module_count=0
 for module in $MODULES; do
   found_match="`find $SEARCH_PATHS -type d -name $module 2>/dev/null | sed -n '1p'`"
@@ -101,11 +105,13 @@ fi
 echo "Building Mapnik SDK..."
 
 cd $JAIL
-git clone git://github.com/mapnik/mapnik.git -b macbinary-tilemill
+rm -rf mapnik 2>/dev/null
+git clone git://github.com/mapnik/mapnik.git -b macbinary-tilemill mapnik
 cd mapnik
 mkdir osx
 cd osx
-curl -s -o sources.tar.bz2 http://dbsgeo.com/tmp/mapnik-static-sdk-2.1.0-dev_r1.tar.bz2
+echo "Fetching remote sources..."
+curl -# -o sources.tar.bz2 http://dbsgeo.com/tmp/mapnik-static-sdk-2.1.0-dev_r1.tar.bz2
 tar xf sources.tar.bz2
 cd ..
 ./configure JOBS=$JOBS
@@ -128,7 +134,7 @@ fi
 echo "Building TileMill..."
 
 cd $JAIL
-rm -rf tilemill 2>/dev/null # FIXME
+rm -rf tilemill 2>/dev/null
 git clone git@github.com:mapbox/tilemill.git
 cd tilemill
 
@@ -138,7 +144,6 @@ export CXXFLAGS="$CORE_LINKFLAGS -I$MAPNIK_ROOT/include -I$MAPNIK_ROOT/usr/local
 export LINKFLAGS="$CORE_LINKFLAGS -L$MAPNIK_ROOT/lib -L$MAPNIK_ROOT/usr/local/lib -Wl,-search_paths_first $CORE_LINKFLAGS"
 export JOBS=$JOBS
 
-npm cache clean
 npm install . --verbose
 
 #
