@@ -1,13 +1,13 @@
 #!/bin/bash
 
-clear
-START=`date +"%s"`
-JOBS=`sysctl -n hw.ncpu`
-
 #
 # Establish a strict path so we don't pull in extraneous stuff.
 #
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin
+
+clear
+START=`date +"%s"`
+JOBS=`sysctl -n hw.ncpu`
 
 #
 # Check for things we know we'll need ahead of time.
@@ -24,6 +24,7 @@ fi
 find /private/tmp -mtime +7 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
 JAIL="/private/tmp/build-`uuidgen`"
 echo "Going to work in $JAIL"
+echo "Running with $JOBS parallel jobs."
 rm -rf $JAIL 2>/dev/null
 mkdir -p $JAIL/bin
 cd $JAIL
