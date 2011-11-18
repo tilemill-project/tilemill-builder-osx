@@ -171,7 +171,7 @@ cd $JAIL
 #
 echo "Checking for globally-installed Mapnik..."
 
-global_mapnik=`mdfind -name libmapnik2.dylib | grep -v ^$JAIL`
+global_mapnik=`mdfind -name libmapnik2.dylib | grep -v private/tmp/build`
 if [ -n "$global_mapnik" ]; then
   echo "Please remove globally-installed libmapnik2.dylib at $global_mapnik"
   exit 1
