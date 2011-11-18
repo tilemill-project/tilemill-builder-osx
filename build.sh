@@ -241,6 +241,7 @@ done
 echo "Testing TileMill startup..."
 
 cd $JAIL/tilemill
+killall node
 ./index.js 2>/dev/null 1>/dev/null &
 pid=$!
 sleep 5
