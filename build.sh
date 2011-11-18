@@ -8,6 +8,7 @@ export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin
 clear
 START=`date +"%s"`
 JOBS=`sysctl -n hw.ncpu`
+ROOT=/Volumes/Flex
 
 #
 # Check for things we know we'll need ahead of time.
@@ -21,8 +22,8 @@ fi
 #
 # Set up shop someplace isolated & clean house.
 #
-find /private/tmp -mtime +7 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
-JAIL="/private/tmp/build-`uuidgen`"
+find $ROOT -mtime +7 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
+JAIL="$ROOT/build-`uuidgen`"
 echo "Going to work in $JAIL"
 echo "Running with $JOBS parallel jobs."
 rm -rf $JAIL 2>/dev/null
@@ -171,7 +172,7 @@ cd $JAIL
 #
 echo "Checking for globally-installed Mapnik..."
 
-global_mapnik=`mdfind -name libmapnik2.dylib | grep -v private/tmp/build`
+global_mapnik=`mdfind -name libmapnik2.dylib | grep -v $ROOT`
 if [ -n "$global_mapnik" ]; then
   echo "Please remove globally-installed libmapnik2.dylib at $global_mapnik"
   exit 1
@@ -241,16 +242,15 @@ done
 echo "Testing TileMill startup..."
 
 cd $JAIL/tilemill
-killall node
+killall node 2>/dev/null
 ./index.js 2>/dev/null 1>/dev/null &
 pid=$!
-sleep 5
-if [ -z "`curl -s http://localhost:8889 | grep TileMill`" ]; then
+sleep 10
+kill $pid
+if [ $? != 0 ]; then
   echo "Unable to start TileMill."
   exit 1
 fi
-echo "Shutting down TileMill PID $pid..."
-kill $pid
 
 #
 # Build the Mac app.
@@ -265,13 +265,10 @@ cd $JAIL/tilemill/platforms/osx
 make clean
 make package
 
+last_tag=$( git describe --tags `git rev-list --tags --max-count=1` )
 commit=`git reflog show HEAD | sed -n '1p' | awk '{ print $1 }'`
-while [ -z $last_tag ]; do
-  revision="HEAD"$carats
-  last_tag=`git tag --contains $revision`
-  carats=$carats"^"
-done
-dev_version="$last_tag-$commit"
+date=$( date +"%Y%m%d" )
+dev_version="$last_tag-$commit-$date"
 echo "Updating bundle with version $dev_version"
 defaults write `pwd`/build/Release/TileMill.app/Contents/Info CFBundleShortVersionString $dev_version
 
