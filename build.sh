@@ -265,10 +265,7 @@ cd $JAIL/tilemill/platforms/osx
 make clean
 make package
 
-last_tag=$( git describe --tags `git rev-list --tags --max-count=1` )
-commit=`git reflog show HEAD | sed -n '1p' | awk '{ print $1 }'`
-date=$( date +"%Y%m%d" )
-dev_version="$last_tag-$commit-$date"
+dev_version=$( git describe --tags )
 echo "Updating bundle with version $dev_version"
 defaults write `pwd`/build/Release/TileMill.app/Contents/Info CFBundleShortVersionString $dev_version
 
