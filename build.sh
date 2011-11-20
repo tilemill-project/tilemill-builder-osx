@@ -23,7 +23,8 @@ fi
 # Set up shop someplace isolated & clean house.
 #
 find $ROOT -mtime +7 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
-JAIL="$ROOT/build-`uuidgen`"
+date=$( date +"%Y%m%d%H%M%S" )
+JAIL="$ROOT/build-$date"
 echo "Going to work in $JAIL"
 echo "Running with $JOBS parallel jobs."
 rm -rf $JAIL 2>/dev/null
