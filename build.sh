@@ -268,7 +268,10 @@ make package
 
 dev_version=$( git describe --tags )
 echo "Updating bundle with version $dev_version"
-defaults write `pwd`/build/Release/TileMill.app/Contents/Info CFBundleShortVersionString $dev_version
+plist="$( pwd )/build/Release/TileMill.app/Contents/Info"
+defaults write $plist CFBundleShortVersionString $dev_version
+appcast="http://mapbox.com/tilemill/platforms/osx/appcast-dev.xml"
+defaults write $plist SUFeedURL $appcast
 
 echo "Creating zip archive of Mac app..."
 make zip
