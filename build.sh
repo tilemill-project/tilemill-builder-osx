@@ -280,6 +280,8 @@ echo "Creating zip archive of Mac app..."
 make zip
 mv TileMill.zip $JAIL/TileMill-$dev_version.zip
 echo "Created TileMill-$dev_version.zip of `stat -f %z TileMill-$dev_version.zip` bytes in size."
+rm $ROOT/TileMill-latest.zip
+ln -s $JAIL/TileMill-$dev_version.zip $ROOT/TileMill-latest.zip
 
 #
 # Close it out.
