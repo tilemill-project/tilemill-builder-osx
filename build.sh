@@ -299,7 +299,7 @@ echo "Created $filename of `stat -f %z $JAIL/$filename` bytes in size."
 rm $ROOT/TileMill-latest.zip
 ln -s $JAIL/$filename $ROOT/TileMill-latest.zip
 rm $ROOT/build-latest
-ln -s $JAIL build-latest
+ln -s $JAIL $ROOT/build-latest
 
 #
 # Close it out.
