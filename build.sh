@@ -294,7 +294,7 @@ echo "Creating zip archive of Mac app..."
 make zip
 filename="TileMill-$dev_version-"$( date -r $START +"%Y%m%d%H%M%S" )".zip"
 mv TileMill.zip $JAIL/$filename
-echo "Created $filename of `stat -f %z $filename` bytes in size."
+echo "Created $filename of `stat -f %z $JAIL/$filename` bytes in size."
 
 rm $ROOT/TileMill-latest.zip
 ln -s $JAIL/$filename $ROOT/TileMill-latest.zip
