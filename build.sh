@@ -111,6 +111,7 @@ cd $JAIL
 rm -rf mapnik 2>/dev/null
 git clone --depth=1 https://github.com/mapnik/mapnik.git -b macbinary-tilemill mapnik
 cd mapnik
+mapnik_hash=`git reflog show HEAD | sed -n '1p' | awk '{ print $1 }'`
 mkdir osx
 cd osx
 echo "Fetching remote sources..."
@@ -266,22 +267,37 @@ cd $JAIL/tilemill/platforms/osx
 make clean
 make package
 
-last_tag=$( git describe --tags `git rev-list --tags --max-count=1` )
-commit=`git reflog show HEAD | sed -n '1p' | awk '{ print $1 }'`
-date=$( date +"%Y%m%d" )
-dev_version="$last_tag-$commit-$date"
+last_tag=$( git describe --tags `git rev-list --tags --max-count=1` | sed -e 's/^v//' )
+tilemill_hash=`git reflog show HEAD | sed -n '1p' | awk '{ print $1 }'`
+dev_version="$last_tag-dev"
 echo "Updating bundle with version $dev_version"
 plist="$( pwd )/build/Release/TileMill.app/Contents/Info"
 defaults write $plist CFBundleShortVersionString $dev_version
+
+credits="$( pwd )/build/Release/TileMill.app/Contents/Resources/Credits.html"
+echo "<html><body style=\"text-align: center;\">" > $credits
+echo "<div style=\"font-weight: bold; font-size: 0.9em; color: red;\">Development Build</div>" >> $credits
+echo "<br/>" >> $credits
+echo "<div style=\"font-size: 0.8em;\">" >> $credits
+echo $( date -r $START +"%c" )"<br/>" >> $credits
+echo "<br/>" >> $credits
+echo "TileMill: <a href=\"https://github.com/mapbox/tilemill/commit/$tilemill_hash\">$tilemill_hash</a><br/>" >> $credits
+echo "Mapnik: <a href=\"https://github.com/mapnik/mapnik/commit/$mapnik_hash\">$mapnik_hash</a><br/>" >> $credits
+echo "</div>" >> $credits
+echo "</body></html>" >> $credits
+
+echo "Updating Sparkle appcast feed URL"
 appcast="http://mapbox.com/tilemill/platforms/osx/appcast-dev.xml"
 defaults write $plist SUFeedURL $appcast
 
 echo "Creating zip archive of Mac app..."
 make zip
-mv TileMill.zip $JAIL/TileMill-$dev_version.zip
-echo "Created TileMill-$dev_version.zip of `stat -f %z TileMill-$dev_version.zip` bytes in size."
+filename="TileMill-$dev_version-"$( date -r $START +"%Y%m%d%H%M%S" )".zip"
+mv TileMill.zip $JAIL/$filename
+echo "Created $filename of `stat -f %z $filename` bytes in size."
+
 rm $ROOT/TileMill-latest.zip
-ln -s $JAIL/TileMill-$dev_version.zip $ROOT/TileMill-latest.zip
+ln -s $JAIL/$filename $ROOT/TileMill-latest.zip
 rm $ROOT/build-latest
 ln -s $JAIL build-latest
 
