@@ -170,13 +170,13 @@ done
 cd $JAIL
 
 #
-# Ensure there is no globally-installed libmapnik2.dylib.
+# Ensure there is no globally-installed libmapnik.dylib.
 #
 echo "Checking for globally-installed Mapnik..."
 
-global_mapnik=`mdfind -name libmapnik2.dylib | grep -v $ROOT`
+global_mapnik=`mdfind -name libmapnik.dylib | grep -v $ROOT`
 if [ -n "$global_mapnik" ]; then
-  echo "Please remove globally-installed libmapnik2.dylib at $global_mapnik"
+  echo "Please remove globally-installed libmapnik.dylib at $global_mapnik"
   exit 1
 fi
 
@@ -193,20 +193,19 @@ export MAPNIK_FONTS="path.join(__dirname, 'fonts')"
 
 ./configure
 node-waf -v build
-SONAME=2
-cp $MAPNIK_ROOT/usr/local/lib/libmapnik2.dylib lib/libmapnik$SONAME.dylib
-install_name_tool -id libmapnik$SONAME.dylib lib/libmapnik2.dylib
-install_name_tool -change /usr/local/lib/libmapnik2.dylib @loader_path/libmapnik$SONAME.dylib lib/_mapnik.node
+cp $MAPNIK_ROOT/usr/local/lib/libmapnik.dylib lib/libmapnik.dylib
+install_name_tool -id libmapnik.dylib lib/libmapnik.dylib
+install_name_tool -change /usr/local/lib/libmapnik.dylib @loader_path/libmapnik.dylib lib/_mapnik.node
 
 mkdir -p lib/fonts
 rm lib/fonts/* 2>/dev/null
-cp -R $MAPNIK_ROOT/usr/local/lib/mapnik2/fonts lib/
+cp -R $MAPNIK_ROOT/usr/local/lib/mapnik/fonts lib/
 
 mkdir -p lib/input
 rm lib/input/*.input 2>/dev/null
-cp $MAPNIK_ROOT/usr/local/lib/mapnik2/input/*.input lib/input/
+cp $MAPNIK_ROOT/usr/local/lib/mapnik/input/*.input lib/input/
 for lib in `ls lib/input/*input`; do
-  install_name_tool -change /usr/local/lib/libmapnik2.dylib @loader_path/../libmapnik$SONAME.dylib $lib;
+  install_name_tool -change /usr/local/lib/libmapnik.dylib @loader_path/../libmapnik.dylib $lib;
 done
 
 #
@@ -232,7 +231,7 @@ rm node_modules/bones/node_modules/jquery/node_modules/htmlparser/libxmljs.node 
 rm node_modules/mapnik/build/default/_mapnik.node 2>/dev/null
 
 for i in `find . -name '*.node'`; do
-  if [ -n "`otool -L $i | grep version | sed -e 's/^[^\/@]*//' | grep -v ^\/usr/lib | grep -v '@loader_path/libmapnik2.dylib'`" ] || [ -n "`otool -L $i | grep local`" ]; then
+  if [ -n "`otool -L $i | grep version | sed -e 's/^[^\/@]*//' | grep -v ^\/usr/lib | grep -v '@loader_path/libmapnik.dylib'`" ] || [ -n "`otool -L $i | grep local`" ]; then
     echo "Improper linking for $i"
     exit 1
   fi
