@@ -26,6 +26,8 @@ find $ROOT -mtime +7 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -
 date=$( date +"%Y-%m-%d-%H%M%S" )
 JAIL="$ROOT/build-$date"
 echo "Going to work in $JAIL"
+echo "Developer Tools:"
+xcodebuild -version
 echo "Running with $JOBS parallel jobs."
 rm -rf $JAIL 2>/dev/null
 mkdir -p $JAIL/bin
