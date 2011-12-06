@@ -289,6 +289,9 @@ echo "Updating Sparkle appcast feed URL"
 appcast="http://mapbox.com/tilemill/platforms/osx/appcast-dev.xml"
 defaults write $plist SUFeedURL $appcast
 
+echo "Ensuring proper permissions on Info.plist..."
+chmod 644 $plist.plist
+
 echo "Creating zip archive of Mac app..."
 make zip
 filename="TileMill-$dev_version-"$( date -r $START +"%Y%m%d%H%M%S" )".zip"
