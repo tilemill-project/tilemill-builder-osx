@@ -141,7 +141,7 @@ echo "Building TileMill..."
 
 cd $JAIL
 rm -rf tilemill 2>/dev/null
-git clone --depth=1 https://github.com/mapbox/tilemill.git tilemill
+git clone https://github.com/mapbox/tilemill.git tilemill
 cd tilemill
 
 export CORE_CXXFLAGS="-O3 -arch x86_64 -arch i386 -mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk"
@@ -268,13 +268,7 @@ cd $JAIL/tilemill/platforms/osx
 make clean
 make package
 
-last_tag=$( git describe --tags `git rev-list --tags --max-count=1` | sed -e 's/^v//' )
 tilemill_hash=`git reflog show HEAD | sed -n '1p' | awk '{ print $1 }'`
-dev_version="$last_tag-dev"
-echo "Updating bundle with version $dev_version"
-plist="$( pwd )/build/Release/TileMill.app/Contents/Info"
-defaults write $plist CFBundleShortVersionString $dev_version
-
 credits="$( pwd )/build/Release/TileMill.app/Contents/Resources/Credits.html"
 echo "<html><body style=\"text-align: center;\">" > $credits
 echo "<div style=\"font-weight: bold; font-size: 0.9em; color: red;\">Development Build</div>" >> $credits
@@ -287,6 +281,8 @@ echo "Mapnik: <a href=\"https://github.com/mapnik/mapnik/commit/$mapnik_hash\">$
 echo "</div>" >> $credits
 echo "</body></html>" >> $credits
 
+plist="$( pwd )/build/Release/TileMill.app/Contents/Info"
+
 echo "Updating Sparkle appcast feed URL"
 appcast="http://mapbox.com/tilemill/platforms/osx/appcast-dev.xml"
 defaults write $plist SUFeedURL $appcast
@@ -296,6 +292,7 @@ chmod 644 $plist.plist
 
 echo "Creating zip archive of Mac app..."
 make zip
+dev_version=$( git describe --tags | sed -e 's/^v//' )
 filename="TileMill-$dev_version-"$( date -r $START +"%Y%m%d%H%M%S" )".zip"
 mv TileMill.zip $JAIL/$filename
 echo "Created $filename of `stat -f %z $JAIL/$filename` bytes in size."
