@@ -293,7 +293,7 @@ chmod 644 $plist.plist
 echo "Creating zip archive of Mac app..."
 make zip
 dev_version=$( git describe --tags | sed -e 's/^v//' )
-filename="TileMill-$dev_version-"$( date -r $START +"%Y%m%d%H%M%S" )".zip"
+filename="TileMill-$dev_version.zip"
 mv TileMill.zip $JAIL/$filename
 echo "Created $filename of `stat -f %z $JAIL/$filename` bytes in size."
 
