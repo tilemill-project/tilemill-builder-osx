@@ -113,7 +113,6 @@ cd $JAIL
 rm -rf mapnik 2>/dev/null
 git clone --depth=1 https://github.com/mapnik/mapnik.git -b macbinary-tilemill mapnik
 cd mapnik
-mapnik_hash=`git reflog show HEAD | sed -n '1p' | awk '{ print $1 }'`
 mkdir osx
 cd osx
 echo "Fetching remote sources..."
@@ -267,19 +266,6 @@ export CXX=
 cd $JAIL/tilemill/platforms/osx
 make clean
 make package
-
-tilemill_hash=`git reflog show HEAD | sed -n '1p' | awk '{ print $1 }'`
-credits="$( pwd )/build/Release/TileMill.app/Contents/Resources/Credits.html"
-echo "<html><body style=\"text-align: center;\">" > $credits
-echo "<div style=\"font-weight: bold; font-size: 0.9em; color: red;\">Development Build</div>" >> $credits
-echo "<br/>" >> $credits
-echo "<div style=\"font-size: 0.8em;\">" >> $credits
-echo $( date -r $START +"%c" )"<br/>" >> $credits
-echo "<br/>" >> $credits
-echo "TileMill: <a href=\"https://github.com/mapbox/tilemill/commit/$tilemill_hash\">$tilemill_hash</a><br/>" >> $credits
-echo "Mapnik: <a href=\"https://github.com/mapnik/mapnik/commit/$mapnik_hash\">$mapnik_hash</a><br/>" >> $credits
-echo "</div>" >> $credits
-echo "</body></html>" >> $credits
 
 plist="$( pwd )/build/Release/TileMill.app/Contents/Info"
 
