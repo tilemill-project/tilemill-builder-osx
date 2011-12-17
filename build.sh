@@ -20,6 +20,16 @@ if [ -z $NPM ]; then
 fi
 
 #
+# Ensure there is no globally-installed mapnik
+#
+echo "Checking for globally-installed Mapnik..."
+global_mapnik=`which mapnik-config`
+if [ -n "$global_mapnik" ]; then
+  echo "Please remove globally-installed mapnik detected via config at $global_mapnik"
+  exit 1
+fi
+
+#
 # Set up shop someplace isolated & clean house.
 #
 find $ROOT -mtime +7 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
@@ -170,16 +180,6 @@ done
 
 cd $JAIL
 
-#
-# Ensure there is no globally-installed libmapnik.dylib.
-#
-echo "Checking for globally-installed Mapnik..."
-
-global_mapnik=`mdfind -name libmapnik.dylib | grep -v $ROOT`
-if [ -n "$global_mapnik" ]; then
-  echo "Please remove globally-installed libmapnik.dylib at $global_mapnik"
-  exit 1
-fi
 
 #
 # Make various fixes to the Mapnik module so that plugins work.
