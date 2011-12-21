@@ -126,7 +126,7 @@ cd mapnik
 mkdir osx
 cd osx
 echo "Fetching remote sources..."
-curl -# -o sources.tar.bz2 http://dbsgeo.com/tmp/mapnik-static-sdk-2.1.0-dev_r1.tar.bz2
+curl -# -o sources.tar.bz2 http://dbsgeo.com/tmp/mapnik-static-sdk-2.1.0-dev_r2.tar.bz2
 tar xf sources.tar.bz2
 cd ..
 ./configure JOBS=$JOBS
