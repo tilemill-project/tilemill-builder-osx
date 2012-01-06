@@ -61,11 +61,11 @@ curl -# http://nodejs.org/dist/node-$NODE_VERSION.tar.gz > node-$NODE_VERSION.ta
 tar xf node-$NODE_VERSION.tar.gz
 cd node-$NODE_VERSION
 # build i386
-./configure --without-snapshot --jobs=$JOBS --blddir=node-32 --dest-cpu=ia32
+./configure --prefix=$JAIL --without-snapshot --jobs=$JOBS --blddir=node-32 --dest-cpu=ia32
 # install headers
 make -j$JOBS install
 # build x86_64
-./configure --without-snapshot --jobs=$JOBS --blddir=node-64 --dest-cpu=x64
+./configure --prefix=$JAIL --without-snapshot --jobs=$JOBS --blddir=node-64 --dest-cpu=x64
 make
 lipo -create node-32/default/node node-64/default/node -output node
 
