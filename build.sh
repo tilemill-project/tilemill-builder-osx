@@ -267,6 +267,11 @@ cd $JAIL/tilemill/platforms/osx
 make clean
 make package
 
+if [ $? != 0 ]; then
+  echo "Error making Xcode project (\`make package\`). Aborting."
+  exit 1
+fi
+
 plist="$( pwd )/build/Release/TileMill.app/Contents/Info"
 
 echo "Updating Sparkle appcast feed URL"
