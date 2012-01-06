@@ -266,6 +266,7 @@ export CXX=
 cd $JAIL/tilemill/platforms/osx
 make clean
 make package
+make package # second time should complete
 
 if [ $? != 0 ]; then
   echo "Error making Xcode project (\`make package\`). Aborting."
