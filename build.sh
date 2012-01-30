@@ -276,7 +276,12 @@ fi
 plist="$( pwd )/build/Release/TileMill.app/Contents/Info"
 
 echo "Updating Sparkle appcast feed URL"
-appcast="http://mapbox.com/tilemill/platforms/osx/appcast-dev.xml"
+tag=$(git describe --contains $( git rev-parse HEAD ) )
+if [ $tag ]; then
+  appcast="http://mapbox.com/tilemill/platforms/osx/appcast2.xml"
+else
+  appcast="http://mapbox.com/tilemill/platforms/osx/appcast-dev.xml"
+fi
 defaults write $plist SUFeedURL $appcast
 
 echo "Ensuring proper permissions on Info.plist..."
