@@ -32,6 +32,7 @@ fi
 #
 # Set up shop someplace isolated & clean house.
 #
+echo "Cleaning up old builds..."
 find $ROOT -mtime +7 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
 date=$( date +"%Y-%m-%d-%H%M%S" )
 JAIL="$ROOT/build-$date"
