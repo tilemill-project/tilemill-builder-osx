@@ -41,6 +41,9 @@ ln -s $JAIL $ROOT/build-active
 echo "Going to work in $JAIL"
 echo "Developer Tools:"
 xcodebuild -version
+XCODE_PREFIX=$( xcode-select -print-path )
+echo "Developer Path:"
+echo $XCODE_PREFIX
 echo "Running with $JOBS parallel jobs."
 rm -rf $JAIL 2>/dev/null
 mkdir -p $JAIL/bin
@@ -126,6 +129,42 @@ cd $JAIL
 rm -rf mapnik 2>/dev/null
 git clone --depth=1 https://github.com/mapnik/mapnik.git -b macbinary-tilemill mapnik
 cd mapnik
+
+echo "Updating config.py..."
+rm config.py 2>/dev/null
+echo "CUSTOM_CXXFLAGS = \"-arch x86_64 -arch i386 -mmacosx-version-min=10.6 -isysroot $XCODE_PREFIX/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk -Iosx/sources/include \"" >> config.py
+echo "CUSTOM_LDFLAGS = \"-Wl,-S -Wl,-search_paths_first -arch x86_64 -arch i386 -mmacosx-version-min=10.6 -isysroot $XCODE_PREFIX/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk -Losx/sources/lib \"" >> config.py
+cat << 'EOF' >> config.py
+CXX = "/usr/bin/clang++"
+CC = "/usr/bin/clang"
+RUNTIME_LINK = "static"
+OPTIMIZATION = "3"
+INPUT_PLUGINS = "csv,gdal,ogr,postgis,shape,sqlite"
+WARNING_CXXFLAGS = "-Wno-unused-function "
+DESTDIR = "./osx/sources/"
+PATH = "./osx/sources/bin/"
+PATH_REPLACE = "/Users/dane/projects/mapnik-dev/trunk-build-static-universal/osx/sources,/Users/dane/projects/mapnik-dev/macbinary/osx/sources:./osx/sources"
+BOOST_INCLUDES = "osx/sources/include"
+BOOST_LIBS = "osx/sources/lib"
+FREETYPE_CONFIG = "./osx/sources/bin/freetype-config"
+ICU_INCLUDES = "./osx/sources/include"
+ICU_LIB_NAME = "icucore"
+PNG_INCLUDES = "./osx/sources/include"
+PNG_LIBS = "./osx/sources/lib"
+JPEG_INCLUDES = "./osx/sources/include"
+JPEG_LIBS = "./osx/sources/lib"
+TIFF_INCLUDES = "./osx/sources/include"
+TIFF_LIBS = "./osx/sources/lib"
+PROJ_INCLUDES = "./osx/sources/include"
+PROJ_LIBS = "./osx/sources/lib"
+PKG_CONFIG_PATH = "./osx/sources/lib/pkgconfig"
+CAIRO_INCLUDES = "./osx/sources/include/"
+CAIRO_LIBS = "./osx/sources/lib"
+SQLITE_INCLUDES = "./osx/sources/include"
+SQLITE_LIBS = "./osx/sources/lib"
+BINDINGS = "none"
+EOF
+
 mkdir osx
 cd osx
 echo "Fetching remote sources..."
@@ -156,8 +195,8 @@ rm -rf tilemill 2>/dev/null
 git clone https://github.com/mapbox/tilemill.git tilemill
 cd tilemill
 
-export CORE_CXXFLAGS="-O3 -arch x86_64 -arch i386 -mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk"
-export CORE_LINKFLAGS="-arch x86_64 -arch i386 -mmacosx-version-min=10.6 -isysroot /Developer/SDKs/MacOSX10.6.sdk"
+export CORE_CXXFLAGS="-O3 -arch x86_64 -arch i386 -mmacosx-version-min=10.6 -isysroot $XCODE_PREFIX/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk"
+export CORE_LINKFLAGS="-arch x86_64 -arch i386 -mmacosx-version-min=10.6 -isysroot $XCODE_PREFIX/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk"
 export CXXFLAGS="$CORE_LINKFLAGS -I$MAPNIK_ROOT/include -I$MAPNIK_ROOT/usr/local/include $CORE_CXXFLAGS"
 export LINKFLAGS="$CORE_LINKFLAGS -L$MAPNIK_ROOT/lib -L$MAPNIK_ROOT/usr/local/lib -Wl,-search_paths_first $CORE_LINKFLAGS"
 export JOBS=$JOBS
