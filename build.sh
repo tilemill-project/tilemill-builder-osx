@@ -9,6 +9,7 @@ clear
 START=`date +"%s"`
 JOBS=`sysctl -n hw.ncpu`
 ROOT=/Volumes/Flex
+rm $ROOT/build-active 2>/dev/null
 
 #
 # Check for things we know we'll need ahead of time.
@@ -36,6 +37,7 @@ echo "Cleaning up old builds..."
 find $ROOT -mtime +7 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
 date=$( date +"%Y-%m-%d-%H%M%S" )
 JAIL="$ROOT/build-$date"
+ln -s $JAIL $ROOT/build-active
 echo "Going to work in $JAIL"
 echo "Developer Tools:"
 xcodebuild -version
@@ -295,10 +297,11 @@ filename="TileMill-$dev_version.zip"
 mv TileMill.zip $JAIL/$filename
 echo "Created $filename of `stat -f %z $JAIL/$filename` bytes in size."
 
-rm $ROOT/TileMill-latest.zip
+rm $ROOT/TileMill-latest.zip 2>/dev/null
 ln -s $JAIL/$filename $ROOT/TileMill-latest.zip
-rm $ROOT/build-latest
+rm $ROOT/build-latest 2>/dev/null
 ln -s $JAIL $ROOT/build-latest
+rm $ROOT/build-active 2>/dev/null
 
 #
 # Close it out.
