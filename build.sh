@@ -179,6 +179,38 @@ make install
 export MAPNIK_ROOT=`pwd`/mapnik-osx-sdk
 export PATH=$MAPNIK_ROOT/usr/local/bin:$PATH
 
+# ensure plugins are present
+if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/csv.input" ]]; then
+  echo "Missing Mapnik CSV plugin!"
+  exit 1
+fi
+
+if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/gdal.input" ]]; then
+  echo "Missing Mapnik GDAL plugin!"
+  exit 1
+fi
+
+if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/postgis.input" ]]; then
+  echo "Missing Mapnik POSTGIS plugin!"
+  exit 1
+fi
+
+if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/shape.input" ]]; then
+  echo "Missing Mapnik Shapefile plugin!"
+  exit 1
+fi
+
+if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/ogr.input" ]]; then
+  echo "Missing Mapnik OGR plugin!"
+  exit 1
+fi
+
+if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/sqlite.input" ]]; then
+  echo "Missing Mapnik SQLite plugin!"
+  exit 1
+fi
+
+
 cd $JAIL
 
 if [ -z "`which mapnik-config | grep $MAPNIK_ROOT`" ]; then
