@@ -77,7 +77,7 @@ mkdir node
 cd node
 
 echo "Building Node..."
-curl -# http://nodejs.org/dist/node-$NODE_VERSION.tar.gz > node-$NODE_VERSION.tar.gz
+curl -# http://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION.tar.gz > node-$NODE_VERSION.tar.gz
 tar xf node-$NODE_VERSION.tar.gz
 cd node-$NODE_VERSION
 # build x86_64
