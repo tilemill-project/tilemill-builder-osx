@@ -17,6 +17,8 @@ rm $ROOT/build-active 2>/dev/null
 LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/build"
 # todo - try using icu-config --version to dynamically fetch
 ICU_VERSION="49.1"
+NODE_VERSION=v0.6.15
+
 
 #
 # Check for things we know we'll need ahead of time.
@@ -72,8 +74,6 @@ export CXX=clang++
 #
 # Build Node.js.
 #
-
-NODE_VERSION=v0.6.14
 
 mkdir node
 cd node
