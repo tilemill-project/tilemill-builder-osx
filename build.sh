@@ -15,6 +15,8 @@ fi
 ROOT=/Volumes/Flex
 rm $ROOT/build-active 2>/dev/null
 LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/build"
+# todo - try using icu-config --version to dynamically fetch
+ICU_VERSION="49.1"
 
 #
 # Check for things we know we'll need ahead of time.
@@ -323,9 +325,19 @@ for i in `find . -name '*.node'`; do
   fi
 done
 
+#
+# Package some data for proj,gdal, and mapnik (icu)
+#
+
 # 
 # Test that the app works.
-# 
+# https://github.com/mapbox/tilemill/commit/35fdd6ade2ff83a7239f50c184410f1cc1459db6
+echo "packaging data..."
+cp -r ${LOCAL_MAPNIK_SDK}/share/proj $JAIL/tilemill/data/
+cp -r ${LOCAL_MAPNIK_SDK}/share/gdal $JAIL/tilemill/data/
+mkdir -p $JAIL/tilemill/data/icu
+cp ${LOCAL_MAPNIK_SDK}/share/icu/$ICU_VERSION/*dat $JAIL/tilemill/data/icu
+
 echo "Testing TileMill startup..."
 
 cd $JAIL/tilemill
