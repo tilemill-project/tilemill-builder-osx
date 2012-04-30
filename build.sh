@@ -17,7 +17,7 @@ rm $ROOT/build-active 2>/dev/null
 LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/build"
 # todo - try using icu-config --version to dynamically fetch
 ICU_VERSION="49.1"
-NODE_VERSION=v0.6.15
+NODE_VERSION=v0.6.16
 
 
 #
