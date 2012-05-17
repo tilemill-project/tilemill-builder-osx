@@ -127,6 +127,12 @@ echo "Checking for required global modules..."
 #
 echo "Building Mapnik SDK..."
 
+# limit jobs more aggressively for mapnik, to avoid low mem conditions
+JOBS=`sysctl -n hw.ncpu`
+if [[ $JOBS > 4 ]]; then
+    JOBS=$(expr $JOBS - 4)
+fi
+
 cd $JAIL
 rm -rf mapnik 2>/dev/null
 git clone --depth=1 https://github.com/mapnik/mapnik.git -b master mapnik
