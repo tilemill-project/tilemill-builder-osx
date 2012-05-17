@@ -6,14 +6,15 @@
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin
 
 START=`date +"%s"`
-date=$( date +"%Y-%m-%d-%H%M%S" )
-
+DATE_NOW=$( date +"%Y-%m-%d-%H%M%S" )
 ROOT=/Volumes/Flex
+
+JAIL="$ROOT/build-$DATE_NOW"
+
 LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/build"
 # todo - try using icu-config --version to dynamically fetch
 ICU_VERSION="49.1"
 NODE_VERSION=v0.6.18
-JAIL="$ROOT/build-$date"
 export PATH=$JAIL/bin:$PATH
 export XCODE_PREFIX=$( xcode-select -print-path )
 # default to Clang
@@ -21,10 +22,6 @@ export CC=clang
 export CXX=clang++
 export MAPNIK_ROOT=${JAIL}/mapnik/mapnik-osx-sdk
 export PATH=$MAPNIK_ROOT/usr/local/bin:$PATH
-export CORE_CXXFLAGS="-O3 -arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
-export CORE_LINKFLAGS="-arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
-export CXXFLAGS="$CORE_LINKFLAGS -I$MAPNIK_ROOT/include -I$MAPNIK_ROOT/usr/local/include $CORE_CXXFLAGS"
-export LINKFLAGS="$CORE_LINKFLAGS -L$MAPNIK_ROOT/lib -L$MAPNIK_ROOT/usr/local/lib -Wl,-S -Wl,-search_paths_first $CORE_LINKFLAGS"
 export MAPNIK_INPUT_PLUGINS="path.join(__dirname, 'mapnik/input')"
 export MAPNIK_FONTS="path.join(__dirname, 'mapnik/fonts')"
 export LIBMAPNIK_PATH=${MAPNIK_ROOT}/usr/local/lib
@@ -35,6 +32,11 @@ if [[ $XCODE_PREFIX == "/Developer" ]]; then
 else
    SDK_PATH="${XCODE_PREFIX}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk" ## >= 4.3.1 from MAC
 fi
+
+export CORE_CXXFLAGS="-O3 -arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
+export CORE_LINKFLAGS="-arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
+export CXXFLAGS="$CORE_LINKFLAGS -I$MAPNIK_ROOT/include -I$MAPNIK_ROOT/usr/local/include $CORE_CXXFLAGS"
+export LINKFLAGS="$CORE_LINKFLAGS -L$MAPNIK_ROOT/lib -L$MAPNIK_ROOT/usr/local/lib -Wl,-S -Wl,-search_paths_first $CORE_LINKFLAGS"
 
 export JOBS=`sysctl -n hw.ncpu`
 if [[ $JOBS > 4 ]]; then
