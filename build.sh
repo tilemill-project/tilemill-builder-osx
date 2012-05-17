@@ -5,19 +5,49 @@
 #
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin
 
-clear
 START=`date +"%s"`
-JOBS=`sysctl -n hw.ncpu`
-if [[ $JOBS > 4 ]]; then
-    JOBS=$(expr $JOBS - 2)
-fi
+date=$( date +"%Y-%m-%d-%H%M%S" )
 
 ROOT=/Volumes/Flex
-rm $ROOT/build-active 2>/dev/null
 LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/build"
 # todo - try using icu-config --version to dynamically fetch
 ICU_VERSION="49.1"
-NODE_VERSION=v0.6.17
+NODE_VERSION=v0.6.18
+JAIL="$ROOT/build-$date"
+export PATH=$JAIL/bin:$PATH
+export XCODE_PREFIX=$( xcode-select -print-path )
+# default to Clang
+export CC=clang
+export CXX=clang++
+export MAPNIK_ROOT=${JAIL}/mapnik/mapnik-osx-sdk
+export PATH=$MAPNIK_ROOT/usr/local/bin:$PATH
+export CORE_CXXFLAGS="-O3 -arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
+export CORE_LINKFLAGS="-arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
+export CXXFLAGS="$CORE_LINKFLAGS -I$MAPNIK_ROOT/include -I$MAPNIK_ROOT/usr/local/include $CORE_CXXFLAGS"
+export LINKFLAGS="$CORE_LINKFLAGS -L$MAPNIK_ROOT/lib -L$MAPNIK_ROOT/usr/local/lib -Wl,-S -Wl,-search_paths_first $CORE_LINKFLAGS"
+export MAPNIK_INPUT_PLUGINS="path.join(__dirname, 'mapnik/input')"
+export MAPNIK_FONTS="path.join(__dirname, 'mapnik/fonts')"
+export LIBMAPNIK_PATH=${MAPNIK_ROOT}/usr/local/lib
+
+if [[ $XCODE_PREFIX == "/Developer" ]]; then
+   SDK_PATH="${XCODE_PREFIX}/SDKs/MacOSX10.6.sdk" ## Xcode 4.2
+   export PATH=/Developer/usr/bin:$PATH
+else
+   SDK_PATH="${XCODE_PREFIX}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk" ## >= 4.3.1 from MAC
+fi
+
+export JOBS=`sysctl -n hw.ncpu`
+if [[ $JOBS > 4 ]]; then
+    export JOBS=$(expr $JOBS - 2)
+fi
+
+
+
+# begin
+clear
+
+# clean up buld-active
+rm $ROOT/build-active 2>/dev/null
 
 
 #
@@ -44,20 +74,10 @@ fi
 #
 echo "Cleaning up old builds..."
 find $ROOT -mtime +7 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
-date=$( date +"%Y-%m-%d-%H%M%S" )
-JAIL="$ROOT/build-$date"
-ln -s $JAIL $ROOT/build-active
 echo "Going to work in $JAIL"
+ln -s $JAIL $ROOT/build-active
 echo "Developer Tools:"
 xcodebuild -version
-XCODE_PREFIX=$( xcode-select -print-path )
-if [[ $XCODE_PREFIX == "/Developer" ]]; then
-   SDK_PATH="${XCODE_PREFIX}/SDKs/MacOSX10.6.sdk" ## Xcode 4.2
-   export PATH=/Developer/usr/bin:$PATH
-else
-   SDK_PATH="${XCODE_PREFIX}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk" ## >= 4.3.1 from MAC
-fi
-
 echo "Developer Path:"
 echo $XCODE_PREFIX
 echo "SDK Path:"
@@ -66,10 +86,6 @@ echo "Running with $JOBS parallel jobs."
 rm -rf $JAIL 2>/dev/null
 mkdir -p $JAIL/bin
 cd $JAIL
-
-# default to Clang
-export CC=clang
-export CXX=clang++
 
 #
 # Build Node.js.
@@ -86,7 +102,6 @@ cd node-$NODE_VERSION
 ./configure --prefix=$JAIL --jobs=$JOBS --dest-cpu=x64
 make install
 
-export PATH=$JAIL/bin:$PATH
 
 cd $JAIL
 
@@ -184,9 +199,6 @@ fi
 ./configure
 make install
 
-export MAPNIK_ROOT=`pwd`/mapnik-osx-sdk
-export PATH=$MAPNIK_ROOT/usr/local/bin:$PATH
-
 # ensure plugins are present
 if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/csv.input" ]]; then
   echo "Missing Mapnik CSV plugin!"
@@ -236,11 +248,6 @@ rm -rf tilemill 2>/dev/null
 git clone https://github.com/mapbox/tilemill.git tilemill
 cd tilemill
 
-export CORE_CXXFLAGS="-O3 -arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
-export CORE_LINKFLAGS="-arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
-export CXXFLAGS="$CORE_LINKFLAGS -I$MAPNIK_ROOT/include -I$MAPNIK_ROOT/usr/local/include $CORE_CXXFLAGS"
-export LINKFLAGS="$CORE_LINKFLAGS -L$MAPNIK_ROOT/lib -L$MAPNIK_ROOT/usr/local/lib -Wl,-S -Wl,-search_paths_first $CORE_LINKFLAGS"
-
 npm install
 
 #
@@ -271,17 +278,7 @@ echo "Fixing up Mapnik module..."
 
 cd $JAIL/tilemill/node_modules/mapnik
 
-export MAPNIK_INPUT_PLUGINS="path.join(__dirname, 'mapnik/input')"
-export MAPNIK_FONTS="path.join(__dirname, 'mapnik/fonts')"
-
 ./configure
-
-<<COMMENT
-# if mapnik is already installed
-LIBMAPNIK_PATH=/Library/Frameworks/Mapnik.framework/unix/lib
-COMMENT
-
-LIBMAPNIK_PATH=${MAPNIK_ROOT}/usr/local/lib
 
 # copy the lib into place
 cp ${LIBMAPNIK_PATH}/libmapnik.dylib lib/libmapnik.dylib
