@@ -300,6 +300,15 @@ for lib in `ls lib/mapnik/input/*input`; do
   install_name_tool -change /usr/local/lib/libmapnik.dylib @loader_path/../../libmapnik.dylib $lib;
 done
 
+mkdir -p lib/mapnik/share
+
+echo "
+module.exports.env = {
+    'ICU_DATA': path.join(__dirname, 'mapnik/share/icu'),
+    'GDAL_DATA': path.join(__dirname, 'mapnik/share/gdal'),
+    'PROJ_LIB': path.join(__dirname, 'mapnik/share/proj')
+};
+" >> lib/mapnik_settings.js
 #
 # Run Mapnik tests.
 #
@@ -336,12 +345,14 @@ done
 
 # 
 # Test that the app works.
-# https://github.com/mapbox/tilemill/commit/35fdd6ade2ff83a7239f50c184410f1cc1459db6
 echo "packaging data..."
-cp -r ${LOCAL_MAPNIK_SDK}/share/proj $JAIL/tilemill/data/
-cp -r ${LOCAL_MAPNIK_SDK}/share/gdal $JAIL/tilemill/data/
-mkdir -p $JAIL/tilemill/data/icu
-cp ${LOCAL_MAPNIK_SDK}/share/icu/$ICU_VERSION/*dat $JAIL/tilemill/data/icu
+
+# package data for mapnik inside node-mapnik folder
+# https://github.com/mapbox/tilemill/issues/1390
+cp -r ${LOCAL_MAPNIK_SDK}/share/proj $JAIL/tilemill/node_modules/mapnik/lib/mapnik/share/
+cp -r ${LOCAL_MAPNIK_SDK}/share/gdal $JAIL/tilemill/node_modules/mapnik/lib/mapnik/share/
+mkdir -p $JAIL/tilemill/node_modules/mapnik/lib/mapnik/share/icu
+cp ${LOCAL_MAPNIK_SDK}/share/icu/$ICU_VERSION/*dat $JAIL/tilemill/node_modules/mapnik/lib/mapnik/share/icu
 
 echo "Testing TileMill startup..."
 
