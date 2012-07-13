@@ -90,9 +90,8 @@ echo "Building Node..."
 curl -# http://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION.tar.gz > node-$NODE_VERSION.tar.gz
 tar xf node-$NODE_VERSION.tar.gz
 cd node-$NODE_VERSION
-# build x86_64
-./configure --prefix=$JAIL --jobs=$JOBS --dest-cpu=x64
-make install
+./configure --prefix=$JAIL
+make -j$JOBS install
 
 
 cd $JAIL
