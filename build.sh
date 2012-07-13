@@ -14,7 +14,7 @@ JAIL="$ROOT/build-$DATE_NOW"
 LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/build"
 # todo - try using icu-config --version to dynamically fetch
 ICU_VERSION="49.1"
-NODE_VERSION=v0.6.19
+NODE_VERSION="v0.8.2"
 export PATH=$JAIL/bin:$PATH
 export XCODE_PREFIX=$( xcode-select -print-path )
 # default to Clang
@@ -62,6 +62,14 @@ if [ -z $NPM ]; then
 fi
 
 #
+# Clear npm cache to avoid potential build failures during development
+# https://github.com/mapbox/tilemill-builder-osx/issues/15
+#
+
+echo "Cleaning npm cache…"
+npm cache clean
+
+
 # Ensure there is no globally-installed mapnik
 #
 echo "Checking for globally-installed Mapnik..."
