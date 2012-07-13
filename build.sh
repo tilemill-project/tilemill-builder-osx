@@ -52,24 +52,6 @@ clear
 rm $ROOT/build-active 2>/dev/null
 
 
-#
-# Check for things we know we'll need ahead of time.
-#
-NPM=`which npm`
-if [ -z $NPM ]; then
-  echo "Unable to find npm in the path."
-  exit 1
-fi
-
-#
-# Clear npm cache to avoid potential build failures during development
-# https://github.com/mapbox/tilemill-builder-osx/issues/15
-#
-
-echo "Cleaning npm cache…"
-npm cache clean
-
-
 # Ensure there is no globally-installed mapnik
 #
 echo "Checking for globally-installed Mapnik..."
@@ -116,6 +98,24 @@ make install
 cd $JAIL
 
 echo "Node now built and installed to $JAIL/bin/node"
+
+#
+# Ensure npm is now also installed
+#
+NPM=`which npm`
+if [ -z $NPM ]; then
+  echo "Unable to find npm in the path."
+  exit 1
+fi
+
+#
+# Clear npm cache to avoid potential build failures during development
+# https://github.com/mapbox/tilemill-builder-osx/issues/15
+#
+
+echo "Cleaning npm cache…"
+npm cache clean
+
 
 #
 # Check for required global node modules and no others.
@@ -259,8 +259,8 @@ git clone https://github.com/mapbox/tilemill.git tilemill
 cd tilemill
 
 npm install
-rm -rf node_modules/sqlite3
-npm install
+#rm -rf node_modules/sqlite3
+#npm install
 
 #
 # Check various modules are linked against system libraries and are dual-arch.
