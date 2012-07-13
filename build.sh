@@ -258,8 +258,8 @@ git clone https://github.com/mapbox/tilemill.git tilemill
 cd tilemill
 
 npm install
-#rm -rf node_modules/sqlite3
-#npm install
+rm -rf node_modules/sqlite3
+npm install
 
 #
 # Check various modules are linked against system libraries and are dual-arch.
