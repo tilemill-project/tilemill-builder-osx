@@ -411,7 +411,7 @@ echo "Code signing with Developer ID"
 security unlock-keychain -p "$( cat $HOME/.keychain )"
 codesign -s "Developer ID Application: Development Seed" "$( pwd )/build/Release/TileMill.app"
 security lock-keychain
-spctl -v --assess "$( pwd )/build/Release/TileMill.app" || echo "Gatekeeper signing not valid."
+spctl -v --assess "$( pwd )/build/Release/TileMill.app" || exit 1
 
 echo "Creating zip archive of Mac app..."
 make zip
