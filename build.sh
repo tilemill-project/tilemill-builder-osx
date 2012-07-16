@@ -337,9 +337,8 @@ echo "Checking Mapnik module linking & architecture..."
 
 cd $JAIL/tilemill
 
-# clean up some MB's
+# clean up some unneeded MB's
 rm -rf ./node_modules/mapnik/build/ 2>/dev/null
-rm -rf ./node_modules/sqlite3/build/ 2>/dev/null
 
 for i in `find . -name '*.node'`; do
   if [ -n "`otool -L $i | grep version | sed -e 's/^[^\/@]*//' | grep -v ^\/usr/lib | grep -v '@loader_path/libmapnik.dylib'`" ] || [ -n "`otool -L $i | grep local`" ]; then
