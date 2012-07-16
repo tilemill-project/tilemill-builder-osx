@@ -250,15 +250,14 @@ fi
 #
 # Build TileMill.
 #
-echo "Building TileMill..."
+echo "Downloading TileMill..."
 
 cd $JAIL
 rm -rf tilemill 2>/dev/null
 git clone https://github.com/mapbox/tilemill.git tilemill
 cd tilemill
 
-npm install
-rm -rf node_modules/sqlite3
+echo "Building TileMill..."
 npm install
 
 #
