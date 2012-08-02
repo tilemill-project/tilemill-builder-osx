@@ -408,7 +408,9 @@ echo "Ensuring proper permissions on Info.plist..."
 chmod 644 $plist.plist
 
 echo "Code signing with Developer ID"
+security default-keychain -s /Library/Keychains/System.keychain
 codesign --verbose -s "Developer ID Application: Development Seed" --keychain /Library/Keychains/System.keychain "$( pwd )/build/Release/TileMill.app"
+security default-keychain -s $HOME/Library/Keychains/login.keychain
 spctl -v --assess "$( pwd )/build/Release/TileMill.app" || exit 1
 
 echo "Creating zip archive of Mac app..."
