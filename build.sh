@@ -411,7 +411,7 @@ echo "Code signing with Developer ID..."
 security default-keychain -s /Library/Keychains/System.keychain
 codesign --verbose -s "Developer ID Application: Development Seed" --keychain /Library/Keychains/System.keychain "$( pwd )/build/Release/TileMill.app"
 security default-keychain -s $HOME/Library/Keychains/login.keychain
-spctl --verbose --assess "$( pwd )/build/Release/TileMill.app"
+spctl --verbose --assess "$( pwd )/build/Release/TileMill.app" 2>&1
 if [ $? != 0 ]; then
     echo "Code signing invalid. Aborting."
     exit 1
