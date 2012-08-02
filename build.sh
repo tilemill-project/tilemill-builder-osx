@@ -407,11 +407,15 @@ defaults write $plist SUFeedURL $appcast
 echo "Ensuring proper permissions on Info.plist..."
 chmod 644 $plist.plist
 
-echo "Code signing with Developer ID"
+echo "Code signing with Developer ID..."
 security default-keychain -s /Library/Keychains/System.keychain
 codesign --verbose -s "Developer ID Application: Development Seed" --keychain /Library/Keychains/System.keychain "$( pwd )/build/Release/TileMill.app"
 security default-keychain -s $HOME/Library/Keychains/login.keychain
-spctl -v --assess "$( pwd )/build/Release/TileMill.app" || exit 1
+spctl --verbose --assess "$( pwd )/build/Release/TileMill.app"
+if [ $? != 0 ]; then
+    echo "Code signing invalid. Aborting."
+    exit 1
+fi
 
 echo "Creating zip archive of Mac app..."
 make zip
