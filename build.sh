@@ -407,10 +407,7 @@ echo "Ensuring proper permissions on Info.plist..."
 chmod 644 $plist.plist
 
 echo "Code signing with Developer ID..."
-make zip
-security default-keychain -s /Library/Keychains/System.keychain
-codesign --verbose -s "Developer ID Application: Development Seed" --keychain /Library/Keychains/System.keychain "$( pwd )/build/Release/TileMill.app"
-security default-keychain -s $HOME/Library/Keychains/login.keychain
+make sign
 spctl --verbose --assess "$( pwd )/build/Release/TileMill.app" 2>&1
 if [ $? != 0 ]; then
     echo "Code signing invalid. Aborting."
