@@ -25,8 +25,6 @@ export PATH=$MAPNIK_ROOT/usr/local/bin:$PATH
 export MAPNIK_INPUT_PLUGINS="path.join(__dirname, 'mapnik/input')"
 export MAPNIK_FONTS="path.join(__dirname, 'mapnik/fonts')"
 export LIBMAPNIK_PATH=${MAPNIK_ROOT}/usr/local/lib
-echo 'clearing out mapnik build from ${MAPNIK_ROOT}/usr/local/'
-rm -rf ${MAPNIK_ROOT}/usr/local/
 
 if [[ $XCODE_PREFIX == "/Developer" ]]; then
    SDK_PATH="${XCODE_PREFIX}/SDKs/MacOSX10.6.sdk" ## Xcode 4.2
@@ -50,8 +48,12 @@ fi
 # begin
 clear
 
-# clean up buld-active
+# clean up build-active
 rm $ROOT/build-active 2>/dev/null
+
+echo 'clearing out mapnik build from ${MAPNIK_ROOT}/usr/local/'
+rm -rf ${MAPNIK_ROOT}/usr/local/
+
 
 
 # Ensure there is no globally-installed mapnik
