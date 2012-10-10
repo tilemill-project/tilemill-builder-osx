@@ -25,6 +25,8 @@ export PATH=$MAPNIK_ROOT/usr/local/bin:$PATH
 export MAPNIK_INPUT_PLUGINS="path.join(__dirname, 'mapnik/input')"
 export MAPNIK_FONTS="path.join(__dirname, 'mapnik/fonts')"
 export LIBMAPNIK_PATH=${MAPNIK_ROOT}/usr/local/lib
+echo 'clearing out mapnik build from ${MAPNIK_ROOT}/usr/local/'
+rm -rf ${MAPNIK_ROOT}/usr/local/
 
 if [[ $XCODE_PREFIX == "/Developer" ]]; then
    SDK_PATH="${XCODE_PREFIX}/SDKs/MacOSX10.6.sdk" ## Xcode 4.2
@@ -159,9 +161,7 @@ fi
 
 cd $JAIL
 rm -rf mapnik 2>/dev/null
-git clone https://github.com/mapnik/mapnik.git -b master mapnik
-# https://github.com/mapnik/mapnik/issues/1526
-git checkout 3845d56c06255c6ca8b35244cbb55606ce8f759e
+git clone --depth=1 https://github.com/mapnik/mapnik.git -b master mapnik
 cd mapnik
 
 echo "CUSTOM_CXXFLAGS = \"-arch x86_64 -g -mmacosx-version-min=10.6 -isysroot $SDK_PATH -Imapnik-osx-sdk/include \"" > config.py
