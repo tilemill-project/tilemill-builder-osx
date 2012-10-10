@@ -159,7 +159,9 @@ fi
 
 cd $JAIL
 rm -rf mapnik 2>/dev/null
-git clone --depth=1 https://github.com/mapnik/mapnik.git -b master mapnik
+git clone https://github.com/mapnik/mapnik.git -b master mapnik
+# https://github.com/mapnik/mapnik/issues/1526
+git checkout 3845d56c06255c6ca8b35244cbb55606ce8f759e
 cd mapnik
 
 echo "CUSTOM_CXXFLAGS = \"-arch x86_64 -g -mmacosx-version-min=10.6 -isysroot $SDK_PATH -Imapnik-osx-sdk/include \"" > config.py
