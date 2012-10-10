@@ -261,7 +261,8 @@ echo "Downloading TileMill..."
 cd $JAIL
 rm -rf tilemill 2>/dev/null
 TILEMILL_BRANCH=master
-git clone --depth=1 https://github.com/mapbox/tilemill.git -b $TILEMILL_BRANCH tilemill
+# note: do not use --depth=1  otherwise the `git describe` below will break
+git clone https://github.com/mapbox/tilemill.git -b $TILEMILL_BRANCH tilemill
 cd tilemill
 
 echo "Building TileMill..."
