@@ -208,6 +208,7 @@ else
 fi
 
 ./configure
+make
 make install
 
 # ensure plugins are present
