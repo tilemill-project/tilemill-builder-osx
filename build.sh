@@ -163,7 +163,8 @@ fi
 
 cd $JAIL
 rm -rf mapnik 2>/dev/null
-git clone --depth=1 https://github.com/mapnik/mapnik.git -b osx-test mapnik
+MAPNIK_BRANCH=master
+git clone --depth=1 https://github.com/mapnik/mapnik.git -b $MAPNIK_BRANCH mapnik
 cd mapnik
 
 echo "CUSTOM_CXXFLAGS = \"-arch x86_64 -g -mmacosx-version-min=10.6 -isysroot $SDK_PATH -Imapnik-osx-sdk/include \"" > config.py
@@ -259,7 +260,8 @@ echo "Downloading TileMill..."
 
 cd $JAIL
 rm -rf tilemill 2>/dev/null
-git clone --depth=1 https://github.com/mapbox/tilemill.git tilemill
+TILEMILL_BRANCH=master
+git clone --depth=1 https://github.com/mapbox/tilemill.git -b $TILEMILL_BRANCH tilemill
 cd tilemill
 
 echo "Building TileMill..."
