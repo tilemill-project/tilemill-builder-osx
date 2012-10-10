@@ -259,7 +259,7 @@ echo "Downloading TileMill..."
 
 cd $JAIL
 rm -rf tilemill 2>/dev/null
-git clone https://github.com/mapbox/tilemill.git tilemill
+git clone --depth=1 https://github.com/mapbox/tilemill.git tilemill
 cd tilemill
 
 echo "Building TileMill..."
