@@ -264,7 +264,7 @@ TILEMILL_BRANCH=master
 # note: do not use --depth=1  otherwise the `git describe` below will break
 git clone https://github.com/mapbox/tilemill.git -b $TILEMILL_BRANCH tilemill
 cd tilemill
-git checkout v0.10.1
+#git checkout v0.10.1
 
 echo "Building TileMill..."
 npm install
