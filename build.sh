@@ -26,12 +26,7 @@ export MAPNIK_INPUT_PLUGINS="path.join(__dirname, 'mapnik/input')"
 export MAPNIK_FONTS="path.join(__dirname, 'mapnik/fonts')"
 export LIBMAPNIK_PATH=${MAPNIK_ROOT}/usr/local/lib
 
-if [[ $XCODE_PREFIX == "/Developer" ]]; then
-   SDK_PATH="${XCODE_PREFIX}/SDKs/MacOSX10.6.sdk" ## Xcode 4.2
-   export PATH=/Developer/usr/bin:$PATH
-else
-   SDK_PATH="${XCODE_PREFIX}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk" ## >= 4.3.1 from MAC
-fi
+SDK_PATH="${XCODE_PREFIX}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk"
 
 export CORE_CXXFLAGS="-O3 -arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
 export CORE_LINKFLAGS="-arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
