@@ -9,6 +9,23 @@ START=`date +"%s"`
 DATE_NOW=$( date +"%Y-%m-%d-%H%M%S" )
 ROOT=/Volumes/Flex
 
+#
+# Do a check to see if we need to build a new version.
+#
+echo "Checking latest version..."
+CHECK="$ROOT/check"
+rm -rf $CHECK
+git clone --depth=1 https://github.com/mapbox/tilemill.git $CHECK
+cd $CHECK
+HASH=`git log | sed -n 1p | awk '{ print $2 }'`
+cd ..
+rm -rf $CHECK
+if [ -f "$ROOT/build.hash" ] && [ `echo $HASH` == `cat "$ROOT/build.hash"` ]; then
+  echo "Version unchanged; aborting build."
+  exit 0
+fi
+echo $HASH > "$ROOT/build.hash"
+
 JAIL="$ROOT/build-$DATE_NOW"
 
 LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/build"
