@@ -280,6 +280,10 @@ cd tilemill
 
 echo "Building TileMill..."
 npm install
+if [ $? != 0 ]; then
+  echo "Failure during npm install."
+  exit 1
+fi
 
 #
 # Check various modules are linked against system libraries and are dual-arch.
