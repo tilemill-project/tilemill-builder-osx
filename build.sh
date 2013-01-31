@@ -81,7 +81,7 @@ fi
 # Set up shop someplace isolated & clean house.
 #
 echo "Cleaning up old builds..."
-find $ROOT -mtime +7 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
+find $ROOT -mtime +30 -maxdepth 1 -name build-\* -type d 2>/dev/null | xargs rm -rf
 echo "Going to work in $JAIL"
 ln -s $JAIL $ROOT/build-active
 echo "Developer Tools:"
