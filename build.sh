@@ -20,7 +20,7 @@ cd $CHECK
 HASH=`git log | sed -n 1p | awk '{ print $2 }'`
 cd ..
 rm -rf $CHECK
-if [ -f "$ROOT/build.hash" ] && [ `echo $HASH` == `cat "$ROOT/build.hash"` ]; then
+if [ -f "$ROOT/build.hash" ] && [ ! -d "$ROOT/build-active" ] && [ `echo $HASH` == `cat "$ROOT/build.hash"` ]; then
   echo "Version unchanged; aborting build."
   exit 0
 fi
