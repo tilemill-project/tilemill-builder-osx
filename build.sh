@@ -442,7 +442,7 @@ fi
 
 echo "Creating zip archive of Mac app..."
 make zip
-dev_version=$( git describe --tags | sed -e 's/^v//' | sed -e 's/-/./' | sed -e 's/-.*//' )
+dev_version=$( git describe --tags )
 filename="TileMill-$dev_version.zip"
 mv TileMill.zip $JAIL/$filename
 echo "Created $filename of `stat -f %z $JAIL/$filename` bytes in size."
