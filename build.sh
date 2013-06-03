@@ -31,7 +31,7 @@ JAIL="$ROOT/build-$DATE_NOW"
 LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/build"
 # todo - try using icu-config --version to dynamically fetch
 ICU_VERSION="49.1"
-NODE_VERSION="v0.6.21"
+NODE_VERSION="v0.6.20"
 export PATH=$JAIL/bin:$PATH
 export XCODE_PREFIX=$( xcode-select -print-path )
 # default to Clang
