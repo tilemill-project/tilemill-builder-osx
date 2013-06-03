@@ -39,6 +39,9 @@ export CC=clang
 export CXX=clang++
 export MAPNIK_ROOT=${JAIL}/mapnik/mapnik-osx-sdk
 export PATH=$MAPNIK_ROOT/usr/local/bin:$PATH
+# also put the base sdk bin on the PATH so things like
+# gdal-config can be found by node-srs
+export PATH=$MAPNIK_ROOT/bin:$PATH
 export MAPNIK_INPUT_PLUGINS="path.join(__dirname, 'mapnik/input')"
 export MAPNIK_FONTS="path.join(__dirname, 'mapnik/fonts')"
 export LIBMAPNIK_PATH=${MAPNIK_ROOT}/usr/local/lib
