@@ -134,6 +134,8 @@ fi
 echo "Cleaning npm cache…"
 npm cache clean
 
+echo "upgrading node-gyp to avoid #25"
+npm explore npm -g -- npm install node-gyp@latest
 
 #
 # Check for required global node modules and no others.
