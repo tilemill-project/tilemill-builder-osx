@@ -189,7 +189,7 @@ echo "CC = \"$CC\"" >> config.py
 echo "JOBS = \"$JOBS\"" >> config.py
 cat << 'EOF' >> config.py
 RUNTIME_LINK = "static"
-INPUT_PLUGINS = "csv,gdal,ogr,postgis,shape,sqlite"
+INPUT_PLUGINS = "csv,gdal,ogr,postgis,shape,sqlite,geojson,raster,osm"
 WARNING_CXXFLAGS = "-Wno-unused-function"
 DESTDIR = "./mapnik-osx-sdk/"
 PATH = "./mapnik-osx-sdk/bin/"
