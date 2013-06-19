@@ -229,6 +229,21 @@ if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/csv.input" ]]; then
   exit 1
 fi
 
+if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/geojson.input" ]]; then
+  echo "Missing Mapnik CSV plugin!"
+  exit 1
+fi
+
+if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/raster.input" ]]; then
+  echo "Missing Mapnik CSV plugin!"
+  exit 1
+fi
+
+if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/osm.input" ]]; then
+  echo "Missing Mapnik CSV plugin!"
+  exit 1
+fi
+
 if [[ ! -f "$MAPNIK_ROOT/usr/local/lib/mapnik/input/gdal.input" ]]; then
   echo "Missing Mapnik GDAL plugin!"
   exit 1
