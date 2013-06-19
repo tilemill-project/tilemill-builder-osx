@@ -48,9 +48,9 @@ export LIBMAPNIK_PATH=${MAPNIK_ROOT}/usr/local/lib
 
 SDK_PATH="${XCODE_PREFIX}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk"
 
-export CORE_CXXFLAGS="-O3 -arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
-export CORE_LINKFLAGS="-arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH"
-export CXXFLAGS="$CORE_LINKFLAGS -I$MAPNIK_ROOT/include -I$MAPNIK_ROOT/usr/local/include $CORE_CXXFLAGS"
+export CORE_CXXFLAGS="-fvisibility=hidden -fvisibility-inlines-hidden -O3 -arch x86_64 -mmacosx-version-min=10.7 -isysroot $SDK_PATH"
+export CORE_LINKFLAGS="-arch x86_64 -mmacosx-version-min=10.7 -isysroot $SDK_PATH"
+export CXXFLAGS="-I$MAPNIK_ROOT/include -I$MAPNIK_ROOT/usr/local/include $CORE_CXXFLAGS"
 export LINKFLAGS="$CORE_LINKFLAGS -L$MAPNIK_ROOT/lib -L$MAPNIK_ROOT/usr/local/lib -Wl,-S -Wl,-search_paths_first $CORE_LINKFLAGS"
 
 export JOBS=`sysctl -n hw.ncpu`
@@ -186,15 +186,14 @@ cd mapnik
 # enable referencing the Mapnik SDK locally and relatively
 ln -s "${LOCAL_MAPNIK_SDK}" `pwd`/mapnik-osx-sdk
 
-echo "CUSTOM_CXXFLAGS = \"-arch x86_64 -g -mmacosx-version-min=10.6 -isysroot $SDK_PATH -Imapnik-osx-sdk/include \"" > config.py
-echo "CUSTOM_LDFLAGS = \"-Wl,-S -Wl,-search_paths_first -arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH -Lmapnik-osx-sdk/lib \"" >> config.py
-echo "CXX = \"$CXX\"" >> config.py
-echo "CC = \"$CC\"" >> config.py
-echo "JOBS = \"$JOBS\"" >> config.py
+echo "CXX = '${CXX}'" > config.py
+echo "CC = '${CC}'" >> config.py
+echo "CUSTOM_CXXFLAGS = '${CXXFLAGS}'" >> config.py
+echo "CUSTOM_CFLAGS = '${CFLAGS}'" >> config.py
+echo "CUSTOM_LDFLAGS = '${LDFLAGS}'" >> config.py
 cat << 'EOF' >> config.py
 RUNTIME_LINK = "static"
-INPUT_PLUGINS = "csv,gdal,ogr,postgis,shape,sqlite,geojson,raster,osm"
-WARNING_CXXFLAGS = "-Wno-unused-function"
+INPUT_PLUGINS = "csv,gdal,geojson,ogr,osm,postgis,raster,shape,sqlite"
 DESTDIR = "./mapnik-osx-sdk/"
 PATH = "./mapnik-osx-sdk/bin/"
 PATH_REPLACE = "/Users/dane/projects/mapnik-packaging/osx/build:./mapnik-osx-sdk"
