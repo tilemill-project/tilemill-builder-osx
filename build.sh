@@ -28,7 +28,7 @@ echo $HASH > "$ROOT/build.hash"
 
 JAIL="$ROOT/build-$DATE_NOW"
 
-LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/build"
+LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/out/build-x86_64/"
 # todo - try using icu-config --version to dynamically fetch
 ICU_VERSION="49.1"
 NODE_VERSION="v0.10.12"
@@ -68,7 +68,6 @@ rm $ROOT/build-active 2>/dev/null
 
 echo 'clearing out mapnik build from ${MAPNIK_ROOT}/usr/local/'
 rm -rf ${MAPNIK_ROOT}/usr/local/
-
 
 
 # Ensure there is no globally-installed mapnik
@@ -184,6 +183,9 @@ MAPNIK_BRANCH=master
 git clone --depth=1 https://github.com/mapnik/mapnik.git -b $MAPNIK_BRANCH mapnik
 cd mapnik
 
+# enable referencing the Mapnik SDK locally and relatively
+ln -s "${LOCAL_MAPNIK_SDK}" `pwd`/mapnik-osx-sdk
+
 echo "CUSTOM_CXXFLAGS = \"-arch x86_64 -g -mmacosx-version-min=10.6 -isysroot $SDK_PATH -Imapnik-osx-sdk/include \"" > config.py
 echo "CUSTOM_LDFLAGS = \"-Wl,-S -Wl,-search_paths_first -arch x86_64 -mmacosx-version-min=10.6 -isysroot $SDK_PATH -Lmapnik-osx-sdk/lib \"" >> config.py
 echo "CXX = \"$CXX\"" >> config.py
@@ -217,15 +219,6 @@ SQLITE_INCLUDES = "./mapnik-osx-sdk/include"
 SQLITE_LIBS = "./mapnik-osx-sdk/lib"
 BINDINGS = "none"
 EOF
-
-if [ -d "${LOCAL_MAPNIK_SDK}" ]; then
-    echo "Using local mapnik sdk..."
-    ln -s "${LOCAL_MAPNIK_SDK}" `pwd`/mapnik-osx-sdk
-else
-    echo "Fetching remote mapnik sdk..."
-    wget http://mapnik.s3.amazonaws.com/mapnik-osx-sdk.tar.bz2
-    tar xf mapnik-osx-sdk.tar.bz2
-fi
 
 ./configure
 make
