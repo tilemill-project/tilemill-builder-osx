@@ -30,7 +30,6 @@ JAIL="$ROOT/build-$DATE_NOW"
 
 LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/out/build-x86_64/"
 # todo - try using icu-config --version to dynamically fetch
-ICU_VERSION="49.1"
 NODE_VERSION="v0.10.12"
 export PATH=$JAIL/bin:$PATH
 export XCODE_PREFIX=$( xcode-select -print-path )
@@ -396,7 +395,7 @@ echo "packaging data..."
 cp -r ${LOCAL_MAPNIK_SDK}/share/proj $JAIL/tilemill/node_modules/mapnik/lib/mapnik/share/
 cp -r ${LOCAL_MAPNIK_SDK}/share/gdal $JAIL/tilemill/node_modules/mapnik/lib/mapnik/share/
 mkdir -p $JAIL/tilemill/node_modules/mapnik/lib/mapnik/share/icu
-cp ${LOCAL_MAPNIK_SDK}/share/icu/$ICU_VERSION/*dat $JAIL/tilemill/node_modules/mapnik/lib/mapnik/share/icu
+cp ${LOCAL_MAPNIK_SDK}/share/icu/*/*dat $JAIL/tilemill/node_modules/mapnik/lib/mapnik/share/icu
 
 echo "Testing TileMill startup..."
 
