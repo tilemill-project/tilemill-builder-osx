@@ -66,7 +66,7 @@ clear
 rm $ROOT/build-active 2>/dev/null
 
 echo 'clearing out mapnik build from ${MAPNIK_ROOT}/usr/local/'
-rm -rf ${MAPNIK_ROOT}/usr/local/
+rm -rf ${LOCAL_MAPNIK_SDK}/usr/local/
 
 
 # Ensure there is no globally-installed mapnik
