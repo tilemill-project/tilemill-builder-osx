@@ -29,8 +29,7 @@ echo $HASH > "$ROOT/build.hash"
 JAIL="$ROOT/build-$DATE_NOW"
 
 LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/out/build-x86_64/"
-# todo - try using icu-config --version to dynamically fetch
-NODE_VERSION="v0.10.12"
+NODE_VERSION="v0.10.13"
 export PATH=$JAIL/bin:$PATH
 export XCODE_PREFIX=$( xcode-select -print-path )
 # default to Clang
