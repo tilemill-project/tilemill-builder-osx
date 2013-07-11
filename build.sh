@@ -46,7 +46,9 @@ export LIBMAPNIK_PATH=${MAPNIK_ROOT}/usr/local/lib
 
 SDK_PATH="${XCODE_PREFIX}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk"
 
-export CORE_CXXFLAGS="-fvisibility=hidden -fvisibility-inlines-hidden -O3 -arch x86_64 -mmacosx-version-min=10.7 -isysroot $SDK_PATH"
+# todo - support -fvisibility=hidden, but requires linking liboost_system to node-mapnik
+# and should not be set for node.js compile
+export CORE_CXXFLAGS="-fvisibility-inlines-hidden -O3 -arch x86_64 -mmacosx-version-min=10.7 -isysroot $SDK_PATH"
 export CORE_LINKFLAGS="-arch x86_64 -mmacosx-version-min=10.7 -isysroot $SDK_PATH"
 export CXXFLAGS="-I$MAPNIK_ROOT/include -I$MAPNIK_ROOT/usr/local/include $CORE_CXXFLAGS"
 export LINKFLAGS="$CORE_LINKFLAGS -L$MAPNIK_ROOT/lib -L$MAPNIK_ROOT/usr/local/lib -Wl,-S -Wl,-search_paths_first $CORE_LINKFLAGS"
