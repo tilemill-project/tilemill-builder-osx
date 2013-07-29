@@ -29,7 +29,7 @@ echo $HASH > "$ROOT/build.hash"
 JAIL="$ROOT/build-$DATE_NOW"
 
 LOCAL_MAPNIK_SDK="$ROOT/mapnik-packaging/osx/out/build-x86_64/"
-NODE_VERSION="v0.10.13"
+NODE_VERSION="v0.10.15"
 export PATH=$JAIL/bin:$PATH
 export XCODE_PREFIX=$( xcode-select -print-path )
 # default to Clang
