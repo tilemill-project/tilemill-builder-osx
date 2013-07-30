@@ -71,6 +71,7 @@ export JOBS=2
 # rebuild node if needed
 if [ ! -d ${PACKAGES}/node-v${NODE_VERSION} ] || $FORCE_BUILD; then
     ./scripts/build_node.sh
+    FORCE_BUILD=true
 else
     echo skipping node-v${NODE_VERSION} build
 fi
@@ -82,6 +83,7 @@ git pull
 if [ `git describe` != `cat mapnik.describe` ] || $FORCE_BUILD; then
     cd ${THIS_BUILD_ROOT}
     ./scripts/build_mapnik.sh
+    FORCE_BUILD=true
 else
     echo 'skipping mapnik build'
 fi
