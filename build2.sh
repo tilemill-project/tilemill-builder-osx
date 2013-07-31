@@ -112,6 +112,7 @@ git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
 git pull
 if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $FORCE_BUILD; then
     rebuild_app
+    git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
     # package
     cd ${THIS_BUILD_ROOT}
     echo 'CURRENT_DIRECTORY="$( cd "$( dirname "$0" )" && pwd )"
@@ -135,6 +136,7 @@ git describe > tilemill.describe
 git pull
 if [ `git describe` != `cat tilemill.describe` ] || $FORCE_BUILD; then
     rebuild_app
+    git describe > tilemill.describe
     cd ${THIS_BUILD_ROOT}/tilemill
     echo "Building TileMill Mac app..."
     cd ./platforms/osx
