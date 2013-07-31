@@ -128,6 +128,7 @@ git describe > tilemill.describe
 git pull
 if [ `git describe` != `cat tilemill.describe` ] || $FORCE_BUILD; then
     rebuild_app
+    cd ${THIS_BUILD_ROOT}/tilemill
     echo "Building TileMill Mac app..."
     cd ./platforms/osx
     make clean
