@@ -83,7 +83,7 @@ if [ ! -d ${PACKAGES}/node-v${NODE_VERSION} ] || $FORCE_BUILD; then
     ./scripts/build_node.sh
     FORCE_BUILD=true
 else
-    echo '  skipping node-v${NODE_VERSION} build'
+    echo "  skipping node-v${NODE_VERSION} build"
 fi
 
 # rebuild mapnik if needed
@@ -129,13 +129,13 @@ if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $
     ' > start.command
     chmod +x start.command
     filename=tm2-osx-${this_day}-`cat tm2/tm2.describe`.tar.gz
-    echo 'creating $filename'
+    echo "creating $filename"
     tar czfH ${filename} \
       --exclude=.git* \
        start.command tm2
     #ditto -c -k --sequesterRsrc --keepParent --zlibCompressionLevel 9 tm2/ ${ZIP_ARCHIVE}
     UPLOAD="s3://tilemill/dev/${filename}"
-    echo 'uploading $UPLOAD'
+    echo "uploading $UPLOAD"
     ./s3cmd/s3cmd --acl-public put ${filename} ${UPLOAD}
 else
     echo '  skipping tm2 build'
@@ -178,7 +178,7 @@ if [ `git describe` != `cat tilemill.describe` ] || $FORCE_BUILD; then
     dev_version=$( git describe --tags )
     filename="TileMill-$dev_version.zip"
     UPLOAD="s3://tilemill/dev/${filename}"
-    echo 'uploading $UPLOAD'
+    echo "uploading $UPLOAD"
     ../../../s3cmd/s3cmd --acl-public put TileMill.zip ${UPLOAD}
     # TODO - get sparkle private key on the machine
     #echo 'Yes' | make sparkle
