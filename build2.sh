@@ -5,6 +5,14 @@
 # - see setup.sh for details
 
 THIS_BUILD_ROOT=/Volumes/Flex/mapnik-packaging/osx
+cd ${THIS_BUILD_ROOT}
+if mkdir LOCKFILE; then
+   echo no lock found, building...
+else
+   echo lock found, exiting…
+   exit 1
+fi
+
 FORCE_BUILD=false
 export LDFLAGS="${STDLIB_LDFLAGS} ${LDFLAGS}"
 this_day=$(date +"%Y-%m-%d")
@@ -62,13 +70,6 @@ function clean_node_modules {
 }
 
 # go
-cd ${THIS_BUILD_ROOT}
-if [ -f LOCKFILE.txt ]; then
-   echo skipping build since another is active
-   exit
-fi
-touch LOCKFILE.txt
-
 git pull
 source MacOSX.sh
 ./scripts/download_deps.sh
@@ -171,8 +172,6 @@ else
 fi
 
 cd ${THIS_BUILD_ROOT}
-rm -f LOCKFILE.txt
-
-
+rm -rf LOCKFILE
 
 
