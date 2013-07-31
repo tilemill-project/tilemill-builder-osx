@@ -126,7 +126,7 @@ if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $
     UPLOAD="s3://tilemill/dev/${filename}"
     ./s3cmd/s3cmd --acl-public put ${filename} ${UPLOAD}
 else
-    echo 'skipping tilemill build'
+    echo 'skipping tm2 build'
 fi
 
 # rebuild tilemill if needed
