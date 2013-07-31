@@ -63,6 +63,12 @@ function clean_node_modules {
 
 # go
 cd ${THIS_BUILD_ROOT}
+if [ -f LOCKFILE.txt ]; then
+   echo skipping build since another is active
+   exit
+fi
+touch LOCKFILE.txt
+
 git pull
 source MacOSX.sh
 ./scripts/download_deps.sh
@@ -164,6 +170,8 @@ else
     echo 'skipping tilemill build'
 fi
 
+cd ${THIS_BUILD_ROOT}
+rm -f LOCKFILE.txt
 
 
 
