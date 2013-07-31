@@ -2,8 +2,8 @@
 
 # depends on
 # - mapnik-packaging, tm2, tilemill, and s3cmd being pulled down ahead of time
+# - see setup.sh for details
 
-# setup
 THIS_BUILD_ROOT=/Volumes/Flex/mapnik-packaging/osx
 FORCE_BUILD=false
 export LDFLAGS="${STDLIB_LDFLAGS} ${LDFLAGS}"
