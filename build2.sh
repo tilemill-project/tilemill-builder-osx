@@ -77,8 +77,10 @@ function rebuild_app {
 function go {
     cd ${THIS_BUILD_ROOT}
     FORCE_BUILD=false
+    LOCKFILE=${THIS_BUILD_ROOT}/lock-dir
+    START=`date +"%s"`
     this_day=$(date +"%Y-%m-%d")
-    if mkdir LOCKFILE; then
+    if mkdir ${LOCKFILE}; then
        echo 'no lock found, building'
     else
        echo 'lock found, exiting!'
@@ -188,5 +190,7 @@ function go {
     fi
     
     cd ${THIS_BUILD_ROOT}
-    rm -rf LOCKFILE
+    rm -rf ${LOCKFILE}
+    END=`date +"%s"`
+    echo "Build completed in $(( $END - $START )) seconds on $this_day"
 }
