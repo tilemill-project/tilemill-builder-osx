@@ -87,6 +87,22 @@ function rebuild_app {
     localize_node_mapnik
 }
 
+function test_app_startup {
+    killall node 2>/dev/null
+    killall tilemill-tile 2>/dev/null
+    killall tilemill-ui 2>/dev/null
+    ./index.js 2>/dev/null 1>/dev/null &
+    pid=$!
+    sleep 15
+    kill $pid
+    if [ $? != 0 ]; then
+      echo "Unable to start app $1."
+      exit 1
+    else
+      echo "$1 app started just fine"
+    fi
+}
+
 function go {
     cd ${THIS_BUILD_ROOT}
     FORCE_BUILD=false
@@ -138,6 +154,8 @@ function go {
     if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $FORCE_BUILD; then
         git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
         rebuild_app
+        cd ${THIS_BUILD_ROOT}/tm2
+        test_app_startup "tm2"
         # package
         cd ${THIS_BUILD_ROOT}
         echo 'CURRENT_DIRECTORY="$( cd "$( dirname "$0" )" && pwd )"
@@ -166,6 +184,7 @@ function go {
         git describe > tilemill.describe
         rebuild_app
         cd ${THIS_BUILD_ROOT}/tilemill
+        test_app_startup "tilemill"
         echo "Building TileMill Mac app..."
         cd ./platforms/osx
         make clean
