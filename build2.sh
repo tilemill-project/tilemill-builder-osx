@@ -50,13 +50,18 @@ module.exports.env = {
 function clean_node_modules {
     rm -rf ./node_modules/mapnik/node_modules/mapnik-vector-tile
     rm -rf ./node_modules/mocha
+    # special case contextify
+    # https://github.com/mapbox/tilemill-builder-osx/issues/27
+    CONTEXIFY_LOCATION="./node_modules/bones/node_modules/jquery/node_modules/jsdom/node_modules/contextify/build/Release"
+    cp "${CONTEXIFY_LOCATION}/contextify.node" ./contextify.node
     find ./node_modules -name test -exec rm -rf {} \;
     find ./node_modules -name build -exec rm -rf {} \;
     find ./node_modules -name src -exec rm -rf {} \;
     find ./node_modules -name deps -exec rm -rf {} \;
     find ./node_modules -name examples -exec rm -rf {} \;
     find ./node_modules -name docs -exec rm -rf {} \;
-    #rm -rf ./node_modules/millstone/node_modules/srs/{build,tools,deps,src}
+    mkdir -p "${CONTEXIFY_LOCATION}"
+    mv ./contextify.node "${CONTEXIFY_LOCATION}/contextify.node"
 }
 
 function rebuild_app {
@@ -85,7 +90,7 @@ function go {
     else
        echo 'lock found, exiting!'
        exit 1
-    fi    
+    fi
     echo 'updading mapnik-packaging checkout'
     git pull
     source MacOSX.sh
@@ -96,7 +101,7 @@ function go {
     export JOBS=2
     
     # rebuild node if needed
-    echo 'updading node'
+    echo 'updating node'
     if [ ! -d ${PACKAGES}/node-v${NODE_VERSION} ] || $FORCE_BUILD; then
         ./scripts/build_node.sh
         FORCE_BUILD=true
@@ -105,7 +110,7 @@ function go {
     fi
     
     # rebuild mapnik if needed
-    echo 'updading mapnik'
+    echo 'updating mapnik'
     cd ${THIS_BUILD_ROOT}/mapnik
     git describe > mapnik.describe
     git pull
@@ -118,7 +123,7 @@ function go {
     fi
     
     # rebuild tm2 if needed
-    echo 'updading tm2'
+    echo 'updating tm2'
     cd ${THIS_BUILD_ROOT}/tm2
     git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
     git pull
@@ -145,7 +150,7 @@ function go {
     fi
     
     # rebuild tilemill if needed
-    echo 'updading tilemill'
+    echo 'updating tilemill'
     cd ${THIS_BUILD_ROOT}/tilemill
     git describe > tilemill.describe
     git pull
@@ -184,6 +189,7 @@ function go {
         echo "uploading $UPLOAD"
         ../../../s3cmd/s3cmd --acl-public put TileMill.zip ${UPLOAD}
         # TODO - get sparkle private key on the machine
+        # https://github.com/mapbox/tilemill-builder-osx/issues/26
         #echo 'Yes' | make sparkle
     else
         echo '  skipping tilemill build'
