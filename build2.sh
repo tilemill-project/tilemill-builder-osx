@@ -12,7 +12,7 @@ function exit_if {
   if [ $FATAL = true ]; then
     exit 1
   else
-    echo '***experienced error: $1'
+    echo "***experienced error: $1"
   fi
 }
 
