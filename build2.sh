@@ -5,19 +5,16 @@
 # - see setup.sh for details
 
 THIS_BUILD_ROOT=/Volumes/Flex/mapnik-packaging/osx
+FORCE_BUILD=false
+FATAL=false
 
-while getopts "f" OPT; do
-    case $OPT in
-        f)
-           FORCE_BUILD=true
-           ;;
-        \?)
-            echo "Usage: $0 [-f]" >&2
-            echo "  -f         Force a build, even if the script does not want to. You may " >&2
-            exit 2
-            ;;
-    esac
-done
+function exit_if {
+  if [ $FATAL = true ]; then
+    exit 1
+  else
+    echo '***experienced error: $1'
+  fi
+}
 
 function localize_node_mapnik {
     echo 'localizing mapnik'
@@ -96,8 +93,7 @@ function test_app_startup {
     sleep 15
     kill $pid
     if [ $? != 0 ]; then
-      echo "Unable to start app $1."
-      exit 1
+      exit_if "Unable to start app $1."
     else
       echo "$1 app started just fine"
     fi
@@ -112,8 +108,7 @@ function go {
     if mkdir ${LOCKFILE}; then
        echo 'no lock found, building'
     else
-       echo 'lock found, exiting!'
-       exit 1
+       exit_if 'lock found, exiting!'
     fi
     echo 'updading mapnik-packaging checkout'
     git pull
@@ -205,8 +200,7 @@ function go {
         make sign
         spctl --verbose --assess "$( pwd )/build/Release/TileMill.app" 2>&1
         if [ $? != 0 ]; then
-            echo "Code signing invalid. Aborting."
-            #exit 1
+            exit_if "Code signing invalid. Aborting."
         fi
         echo "Creating zip archive of Mac app..."
         make zip
