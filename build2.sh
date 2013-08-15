@@ -101,7 +101,6 @@ function test_app_startup {
 
 function go {
     cd ${THIS_BUILD_ROOT}
-    FORCE_BUILD=false
     LOCKFILE=${THIS_BUILD_ROOT}/lock-dir
     START=`date +"%s"`
     this_day=$(date +"%Y-%m-%d")
