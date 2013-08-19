@@ -50,9 +50,11 @@ function clean_node_modules {
     rm -rf ./node_modules/bones/node_modules/jquery/node_modules/htmlparser/testdata
     rm -rf ./node_modules/jshint
     rm -rf ./node_modules/JSV/jsdoc-toolkit
-    rm -rf ./test
+    # disabled since this can break git merge
+    #rm -rf ./test
     # special case contextify
     # https://github.com/mapbox/tilemill-builder-osx/issues/27
+    rm -rf ./NW_TMP/
     CONTEXIFY_LOCATION="./node_modules/bones/node_modules/jquery/node_modules/jsdom/node_modules/contextify/build/Release"
     cp "${CONTEXIFY_LOCATION}/contextify.node" ./contextify.node
     NWMATCHER_LOCATION="./node_modules/bones/node_modules/jquery/node_modules/jsdom/node_modules/nwmatcher/src"
@@ -142,6 +144,8 @@ function go {
     
     # rebuild tm2 if needed
     echo 'updating tm2'
+    # clear out old tarballs
+    rm ${THIS_BUILD_ROOT}/tm2-*.tar.gz
     cd ${THIS_BUILD_ROOT}/tm2
     git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
     git pull
