@@ -59,12 +59,12 @@ function clean_node_modules {
     cp "${CONTEXIFY_LOCATION}/contextify.node" ./contextify.node
     NWMATCHER_LOCATION="./node_modules/bones/node_modules/jquery/node_modules/jsdom/node_modules/nwmatcher/src"
     cp -r ${NWMATCHER_LOCATION} ./NW_TMP/
-    find ./node_modules -name test -exec rm -rf {} \;
-    find ./node_modules -name build -exec rm -rf {} \;
-    find ./node_modules -name src -exec rm -rf {} \;
-    find ./node_modules -name deps -exec rm -rf {} \;
-    find ./node_modules -name examples -exec rm -rf {} \;
-    find ./node_modules -name docs -exec rm -rf {} \;
+    find ./node_modules -name test | xargs rm -rf;
+    find ./node_modules -name build | xargs rm -rf;
+    find ./node_modules -name src | xargs rm -rf;
+    find ./node_modules -name deps | xargs rm -rf;
+    find ./node_modules -name examples | xargs rm -rf;
+    find ./node_modules -name docs | xargs rm -rf;
     mkdir -p "${CONTEXIFY_LOCATION}"
     mv ./contextify.node "${CONTEXIFY_LOCATION}/contextify.node"
     mkdir -p ${NWMATCHER_LOCATION}
