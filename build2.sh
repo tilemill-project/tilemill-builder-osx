@@ -79,7 +79,7 @@ function rebuild_app {
     rm -f ./node
     cp `which node` ./
     echo 'running npm install'
-    npm install --sqlite=${BUILD} --production --loglevel warn
+    npm install --sqlite=${BUILD} --runtime_link=static --production --loglevel warn
     echo 'cleaning out uneeded items in node_modules'
     clean_node_modules
     cd ./node_modules/mapnik
