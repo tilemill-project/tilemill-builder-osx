@@ -145,7 +145,7 @@ function go {
     # rebuild tm2 if needed
     echo 'updating tm2'
     # clear out old tarballs
-    rm ${THIS_BUILD_ROOT}/tm2-*.tar.gz
+    rm -f ${THIS_BUILD_ROOT}/tm2-*.tar.gz
     cd ${THIS_BUILD_ROOT}/tm2
     git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
     git pull
