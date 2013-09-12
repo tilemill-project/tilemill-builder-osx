@@ -45,6 +45,8 @@ module.exports.env = {
 }
 
 function clean_node_modules {
+    # ensure we have only one mapnik included
+    rm -rf ./node_modules/tilelive-mapnik/node_modules/mapnik
     rm -rf ./node_modules/mapnik/node_modules/mapnik-vector-tile
     rm -rf ./node_modules/mocha
     rm -rf ./node_modules/bones/node_modules/jquery/node_modules/htmlparser/testdata
