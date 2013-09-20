@@ -210,7 +210,7 @@ function go {
         echo "Creating zip archive of Mac app..."
         make zip
         dev_version=$( git describe --tags )
-        filename="TileMill-$dev_version.zip"
+        filename="TileMill-${dev_version}.zip"
         UPLOAD="s3://tilemill/dev/${filename}"
         echo "uploading $UPLOAD"
         ../../../s3cmd/s3cmd --acl-public put TileMill.zip ${UPLOAD}
