@@ -113,7 +113,7 @@ function go {
     else
        exit_if 'lock found, exiting!'
     fi
-    echo 'updading mapnik-packaging checkout'
+    echo 'updating mapnik-packaging checkout'
     git pull
     source MacOSX.sh
     # set these to ensure proper linking of all c++ libs
