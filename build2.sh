@@ -1,18 +1,24 @@
 #!/bin/bash
 
+FATAL=true
+FORCE=false
+FORCE_MAPNIK=false
+FORCE_TM=false
+FORCE_NODE=false
+FORCE_TM2=false
+THIS_BUILD_ROOT=/Volumes/Flex/mapnik-packaging/osx
+
 # depends on
 # - mapnik-packaging, tm2, tilemill, and s3cmd being pulled down ahead of time
 # - see setup.sh for details
 
-THIS_BUILD_ROOT=/Volumes/Flex/mapnik-packaging/osx
-FORCE_BUILD=false
-FATAL=false
-
 function exit_if {
   if [ $FATAL = true ]; then
-    exit 1
+    kill -INT $$
   else
-    echo "***experienced error: $1"
+    echo "***"
+    echo "***experienced error: $1 but continuing"
+    echo "***"
   fi
 }
 
@@ -124,9 +130,9 @@ function go {
     
     # rebuild node if needed
     echo 'updating node'
-    if [ ! -d ${PACKAGES}/node-v${NODE_VERSION} ] || $FORCE_BUILD; then
+    if [ ! -d ${PACKAGES}/node-v${NODE_VERSION} ] || $FORCE || $FORCE_NODE; then
         ./scripts/build_node.sh
-        FORCE_BUILD=true
+        FORCE=true
     else
         echo "  skipping node-v${NODE_VERSION} build"
     fi
@@ -136,10 +142,10 @@ function go {
     cd ${THIS_BUILD_ROOT}/mapnik
     git describe > mapnik.describe
     git pull
-    if [ `git describe` != `cat mapnik.describe` ] || $FORCE_BUILD; then
+    if [ `git describe` != `cat mapnik.describe` ] || $FORCE || $FORCE_MAPNIK; then
         cd ${THIS_BUILD_ROOT}
         ./scripts/build_mapnik.sh
-        FORCE_BUILD=true
+        FORCE=true
     else
         echo '  skipping mapnik build'
     fi
@@ -151,7 +157,7 @@ function go {
     cd ${THIS_BUILD_ROOT}/tm2
     git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
     git pull
-    if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $FORCE_BUILD; then
+    if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $FORCE || $FORCE_TM2; then
         git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
         rebuild_app
         cd ${THIS_BUILD_ROOT}/tm2
@@ -180,7 +186,7 @@ function go {
     cd ${THIS_BUILD_ROOT}/tilemill
     git describe > tilemill.describe
     git pull
-    if [ `git describe` != `cat tilemill.describe` ] || $FORCE_BUILD; then
+    if [ `git describe` != `cat tilemill.describe` ] || $FORCE || $FORCE_TM; then
         git describe > tilemill.describe
         rebuild_app
         cd ${THIS_BUILD_ROOT}/tilemill
