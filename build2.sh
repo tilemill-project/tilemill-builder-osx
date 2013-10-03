@@ -8,6 +8,7 @@ FORCE_NODE=false
 FORCE_TM2=false
 ID=""
 THIS_BUILD_ROOT=/Volumes/Flex/mapnik-packaging/osx
+LOCKFILE=${THIS_BUILD_ROOT}/lock-dir
 
 # depends on
 # - mapnik-packaging, tm2, tilemill, and s3cmd being pulled down ahead of time
@@ -15,6 +16,7 @@ THIS_BUILD_ROOT=/Volumes/Flex/mapnik-packaging/osx
 
 function exit_if {
   if [ $FATAL = true ]; then
+    rm -rf ${LOCKFILE}
     kill -INT $$
   else
     echo "***"
@@ -112,7 +114,6 @@ function test_app_startup {
 
 function go {
     cd ${THIS_BUILD_ROOT}
-    LOCKFILE=${THIS_BUILD_ROOT}/lock-dir
     START=`date +"%s"`
     this_day=$(date +"%Y-%m-%d")
     if mkdir ${LOCKFILE}; then
