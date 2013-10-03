@@ -6,6 +6,7 @@ FORCE_MAPNIK=false
 FORCE_TM=false
 FORCE_NODE=false
 FORCE_TM2=false
+ID=""
 THIS_BUILD_ROOT=/Volumes/Flex/mapnik-packaging/osx
 
 # depends on
@@ -168,7 +169,7 @@ function go {
         ${CURRENT_DIRECTORY}/tm2/node ${CURRENT_DIRECTORY}/tm2/index.js
         ' > start.command
         chmod +x start.command
-        filename=tm2-osx-${this_day}-`cat tm2/tm2.describe`.tar.gz
+        filename=tm2-osx-${this_day}-`cat tm2/tm2.describe`${ID}.tar.gz
         echo "creating $filename"
         tar czfH ${filename} \
           --exclude=.git* \
@@ -216,7 +217,7 @@ function go {
         echo "Creating zip archive of Mac app..."
         make zip
         dev_version=$( git describe --tags )
-        filename="TileMill-${dev_version}.zip"
+        filename="TileMill-${dev_version}${ID}.zip"
         UPLOAD="s3://tilemill/dev/${filename}"
         echo "uploading $UPLOAD"
         ../../../s3cmd/s3cmd --acl-public put TileMill.zip ${UPLOAD}
