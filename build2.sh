@@ -119,7 +119,8 @@ function go {
     if mkdir ${LOCKFILE}; then
        echo 'no lock found, building'
     else
-       exit_if 'lock found, exiting!'
+       echo 'lock found, exiting!'
+       exit 1
     fi
     echo 'updating mapnik-packaging checkout'
     git pull
