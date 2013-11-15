@@ -58,7 +58,6 @@ function clean_node_modules {
     rm -rf ./node_modules/tilelive-mapnik/node_modules/mapnik
     rm -rf ./node_modules/mapnik/node_modules/mapnik-vector-tile
     rm -rf ./node_modules/mocha
-    rm -rf ./node_modules/bones/node_modules/jquery/node_modules/htmlparser/testdata
     rm -rf ./node_modules/jshint
     rm -rf ./node_modules/JSV/jsdoc-toolkit
     # disabled since this can break git merge
@@ -71,11 +70,14 @@ function clean_node_modules {
     NWMATCHER_LOCATION="./node_modules/bones/node_modules/jquery/node_modules/jsdom/node_modules/nwmatcher/src"
     cp -r ${NWMATCHER_LOCATION} ./NW_TMP/
     find ./node_modules -name test | xargs rm -rf;
+    find ./node_modules -name tests | xargs rm -rf;
+    find ./node_modules -name tmp | xargs rm -rf;
     find ./node_modules -name build | xargs rm -rf;
     find ./node_modules -name src | xargs rm -rf;
     find ./node_modules -name deps | xargs rm -rf;
     find ./node_modules -name examples | xargs rm -rf;
     find ./node_modules -name docs | xargs rm -rf;
+    find ./node_modules -name testdata | xargs rm -rf;
     mkdir -p "${CONTEXIFY_LOCATION}"
     mv ./contextify.node "${CONTEXIFY_LOCATION}/contextify.node"
     mkdir -p ${NWMATCHER_LOCATION}
