@@ -144,7 +144,7 @@ function go {
     
     # rebuild mapnik if needed
     echo 'updating mapnik'
-    cd ${THIS_BUILD_ROOT}/mapnik
+    cd ${MAPNIK_SOURCE}
     git describe > mapnik.describe
     git pull
     if [ `git describe` != `cat mapnik.describe` ] || $FORCE || $FORCE_MAPNIK; then
