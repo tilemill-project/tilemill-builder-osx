@@ -119,121 +119,119 @@ function go {
     START=`date +"%s"`
     this_day=$(date +"%Y-%m-%d %r")
     if mkdir ${LOCKFILE}; then
-       echo 'no lock found, building'
-    else
-       echo 'lock found, exiting!'
-       exit 1
-    fi
-    echo 'updating mapnik-packaging checkout'
-    git pull
-    source MacOSX.sh
-    # set these to ensure proper linking of all c++ libs
-    # we do not set them by default to avoid linking c libs to libc++
-    export LDFLAGS="${STDLIB_LDFLAGS} ${LDFLAGS}"
-    ./scripts/download_deps.sh
-    export JOBS=2
-    
-    # rebuild node if needed
-    echo 'updating node'
-    if [ ! -d ${PACKAGES}/node-v${NODE_VERSION} ] || $FORCE || $FORCE_NODE; then
-        ./scripts/build_node.sh
-        FORCE=true
-    else
-        echo "  skipping node-v${NODE_VERSION} build"
-    fi
-    
-    # rebuild mapnik if needed
-    echo 'updating mapnik'
-    cd ${MAPNIK_SOURCE}
-    git describe > mapnik.describe
-    git pull
-    if [ `git describe` != `cat mapnik.describe` ] || $FORCE || $FORCE_MAPNIK; then
-        cd ${THIS_BUILD_ROOT}
-        ./scripts/build_mapnik.sh
-        FORCE=true
-    else
-        echo '  skipping mapnik build'
-    fi
-    
-    # rebuild tm2 if needed
-    echo 'updating tm2'
-    # clear out old tarballs
-    rm -f ${THIS_BUILD_ROOT}/tm2-*.tar.gz
-    cd ${THIS_BUILD_ROOT}/tm2
-    git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
-    git pull
-    if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $FORCE || $FORCE_TM2; then
-        git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
-        rebuild_app
-        cd ${THIS_BUILD_ROOT}/tm2
-        test_app_startup "tm2"
-        # package
-        cd ${THIS_BUILD_ROOT}
-        echo 'CURRENT_DIRECTORY="$( cd "$( dirname "$0" )" && pwd )"
-        ${CURRENT_DIRECTORY}/tm2/node ${CURRENT_DIRECTORY}/tm2/index.js
-        ' > start.command
-        chmod +x start.command
-        filename=tm2-osx-${this_day}-`cat tm2/tm2.describe`${ID}.tar.gz
-        echo "creating $filename"
-        tar czfH ${filename} \
-          --exclude=.git* \
-           start.command tm2
-        #ditto -c -k --sequesterRsrc --keepParent --zlibCompressionLevel 9 tm2/ ${ZIP_ARCHIVE}
-        UPLOAD="s3://tilemill/dev/${filename}"
-        echo "uploading $UPLOAD"
-        ./s3cmd/s3cmd --acl-public put ${filename} ${UPLOAD}
-    else
-        echo '  skipping tm2 build'
-    fi
-    
-    # rebuild tilemill if needed
-    echo 'updating tilemill'
-    cd ${THIS_BUILD_ROOT}/tilemill
-    git describe > tilemill.describe
-    git pull
-    if [ `git describe` != `cat tilemill.describe` ] || $FORCE || $FORCE_TM; then
-        git describe > tilemill.describe
-        rebuild_app
-        cd ${THIS_BUILD_ROOT}/tilemill
-        test_app_startup "tilemill"
-        echo "Building TileMill Mac app..."
-        cd ./platforms/osx
-        make clean
-        make package
-        make package # works the second time
-        plist="$( pwd )/build/Release/TileMill.app/Contents/Info"
-        echo "Updating Sparkle appcast feed URL"
-        tag=$(git describe --contains $( git rev-parse HEAD ) )
-        if [ $tag ]; then
-          appcast="http://mapbox.com/tilemill/platforms/osx/appcast2.xml"
+        echo 'no lock found, building!'
+        echo 'updating mapnik-packaging checkout'
+        git pull
+        source MacOSX.sh
+        # set these to ensure proper linking of all c++ libs
+        # we do not set them by default to avoid linking c libs to libc++
+        export LDFLAGS="${STDLIB_LDFLAGS} ${LDFLAGS}"
+        ./scripts/download_deps.sh
+        export JOBS=2
+        
+        # rebuild node if needed
+        echo 'updating node'
+        if [ ! -d ${PACKAGES}/node-v${NODE_VERSION} ] || $FORCE || $FORCE_NODE; then
+            ./scripts/build_node.sh
+            FORCE=true
         else
-          appcast="http://mapbox.com/tilemill/platforms/osx/appcast-dev.xml"
+            echo "  skipping node-v${NODE_VERSION} build"
         fi
-        defaults write $plist SUFeedURL $appcast
-        echo "Ensuring proper permissions on Info.plist..."
-        chmod 644 $plist.plist
-        echo "Code signing with Developer ID..."
-        make sign
-        spctl --verbose --assess "$( pwd )/build/Release/TileMill.app" 2>&1
-        if [ $? != 0 ]; then
-            exit_if "Code signing invalid. Aborting."
+        
+        # rebuild mapnik if needed
+        echo 'updating mapnik'
+        cd ${MAPNIK_SOURCE}
+        git describe > mapnik.describe
+        git pull
+        if [ `git describe` != `cat mapnik.describe` ] || $FORCE || $FORCE_MAPNIK; then
+            cd ${THIS_BUILD_ROOT}
+            ./scripts/build_mapnik.sh
+            FORCE=true
+        else
+            echo '  skipping mapnik build'
         fi
-        echo "Creating zip archive of Mac app..."
-        make zip
-        dev_version=$( git describe --tags )
-        filename="TileMill-${dev_version}${ID}.zip"
-        UPLOAD="s3://tilemill/dev/${filename}"
-        echo "uploading $UPLOAD"
-        ../../../s3cmd/s3cmd --acl-public put TileMill.zip ${UPLOAD}
-        # TODO - get sparkle private key on the machine
-        # https://github.com/mapbox/tilemill-builder-osx/issues/26
-        #echo 'Yes' | make sparkle
+        
+        # rebuild tm2 if needed
+        echo 'updating tm2'
+        # clear out old tarballs
+        rm -f ${THIS_BUILD_ROOT}/tm2-*.tar.gz
+        cd ${THIS_BUILD_ROOT}/tm2
+        git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
+        git pull
+        if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $FORCE || $FORCE_TM2; then
+            git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
+            rebuild_app
+            cd ${THIS_BUILD_ROOT}/tm2
+            test_app_startup "tm2"
+            # package
+            cd ${THIS_BUILD_ROOT}
+            echo 'CURRENT_DIRECTORY="$( cd "$( dirname "$0" )" && pwd )"
+            ${CURRENT_DIRECTORY}/tm2/node ${CURRENT_DIRECTORY}/tm2/index.js
+            ' > start.command
+            chmod +x start.command
+            filename=tm2-osx-${this_day}-`cat tm2/tm2.describe`${ID}.tar.gz
+            echo "creating $filename"
+            tar czfH ${filename} \
+              --exclude=.git* \
+               start.command tm2
+            #ditto -c -k --sequesterRsrc --keepParent --zlibCompressionLevel 9 tm2/ ${ZIP_ARCHIVE}
+            UPLOAD="s3://tilemill/dev/${filename}"
+            echo "uploading $UPLOAD"
+            ./s3cmd/s3cmd --acl-public put ${filename} ${UPLOAD}
+        else
+            echo '  skipping tm2 build'
+        fi
+        
+        # rebuild tilemill if needed
+        echo 'updating tilemill'
+        cd ${THIS_BUILD_ROOT}/tilemill
+        git describe > tilemill.describe
+        git pull
+        if [ `git describe` != `cat tilemill.describe` ] || $FORCE || $FORCE_TM; then
+            git describe > tilemill.describe
+            rebuild_app
+            cd ${THIS_BUILD_ROOT}/tilemill
+            test_app_startup "tilemill"
+            echo "Building TileMill Mac app..."
+            cd ./platforms/osx
+            make clean
+            make package
+            make package # works the second time
+            plist="$( pwd )/build/Release/TileMill.app/Contents/Info"
+            echo "Updating Sparkle appcast feed URL"
+            tag=$(git describe --contains $( git rev-parse HEAD ) )
+            if [ $tag ]; then
+              appcast="http://mapbox.com/tilemill/platforms/osx/appcast2.xml"
+            else
+              appcast="http://mapbox.com/tilemill/platforms/osx/appcast-dev.xml"
+            fi
+            defaults write $plist SUFeedURL $appcast
+            echo "Ensuring proper permissions on Info.plist..."
+            chmod 644 $plist.plist
+            echo "Code signing with Developer ID..."
+            make sign
+            spctl --verbose --assess "$( pwd )/build/Release/TileMill.app" 2>&1
+            if [ $? != 0 ]; then
+                exit_if "Code signing invalid. Aborting."
+            fi
+            echo "Creating zip archive of Mac app..."
+            make zip
+            dev_version=$( git describe --tags )
+            filename="TileMill-${dev_version}${ID}.zip"
+            UPLOAD="s3://tilemill/dev/${filename}"
+            echo "uploading $UPLOAD"
+            ../../../s3cmd/s3cmd --acl-public put TileMill.zip ${UPLOAD}
+            # TODO - get sparkle private key on the machine
+            # https://github.com/mapbox/tilemill-builder-osx/issues/26
+            #echo 'Yes' | make sparkle
+        else
+            echo '  skipping tilemill build'
+        fi
+        cd ${THIS_BUILD_ROOT}
+        rm -rf ${LOCKFILE}
+        END=`date +"%s"`
+        echo "Build completed in $(( $END - $START )) seconds on $this_day"
     else
-        echo '  skipping tilemill build'
+       echo 'lock found, not building!'
     fi
-    
-    cd ${THIS_BUILD_ROOT}
-    rm -rf ${LOCKFILE}
-    END=`date +"%s"`
-    echo "Build completed in $(( $END - $START )) seconds on $this_day"
 }
