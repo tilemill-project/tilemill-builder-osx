@@ -117,7 +117,7 @@ function test_app_startup {
 function go {
     cd ${THIS_BUILD_ROOT}
     START=`date +"%s"`
-    this_day=$(date +"%Y-%m-%d")
+    this_day=$(date +"%Y-%m-%d %r")
     if mkdir ${LOCKFILE}; then
        echo 'no lock found, building'
     else
