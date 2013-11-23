@@ -249,16 +249,10 @@ function go {
         # we do not set them by default to avoid linking c libs to libc++
         export LDFLAGS="${STDLIB_LDFLAGS} ${LDFLAGS}"
         
-        # rebuild node if needed
+        # rebuild apps if needed
         rebuild_node
-        
-        # rebuild mapnik if needed
         rebuild_mapnik '2.3.x'
-        
-        # rebuild tm2 if needed
         rebuild_tm2 'master'
-
-        # rebuild tilemill if needed
         rebuild_tilemill 'master'
 
         cd ${THIS_BUILD_ROOT}
@@ -267,9 +261,10 @@ function go {
             export LDFLAGS="${STDLIB_LDFLAGS} ${LDFLAGS}"
             rebuild_node
             rebuild_mapnik 'master'
-            rebuild_tm2 'master'
-            rebuild_tilemill 'master'
-
+            BUILD_POSTFIX="cxx11"
+            rebuild_tm2 'c++11'
+            rebuild_tilemill 'c++11'
+            cd ${THIS_BUILD_ROOT}
         fi
 
         cd ${THIS_BUILD_ROOT}
