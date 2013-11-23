@@ -94,7 +94,7 @@ function rebuild_app {
     rm -f ./node
     cp `which node` ./
     echo 'running npm install'
-    npm install --sqlite=${BUILD} --runtime_link=static --production --loglevel warn
+    npm install --build-from-source --sqlite=${BUILD} --runtime_link=static --production --loglevel warn
     echo 'cleaning out uneeded items in node_modules'
     clean_node_modules
     cd ./node_modules/mapnik
@@ -117,7 +117,7 @@ function test_app_startup {
 }
 
 function init_building {
-    if [ -d "${THIS_BUILD_ROOT}" ]; then
+    if [ ! -d "${THIS_BUILD_ROOT}" ]; then
         cd ${BUILD_BASE}
         git clone --depth 1 https://github.com/mapnik/mapnik-packaging.git
     fi
@@ -170,7 +170,7 @@ function rebuild_tm2 {
         ${CURRENT_DIRECTORY}/tm2/node ${CURRENT_DIRECTORY}/tm2/index.js
         ' > start.command
         chmod +x start.command
-        filename=tm2-osx-${this_day}-`cat tm2/tm2.describe`${BUILD_POSTFIX}.tar.gz
+        filename=tm2-osx-$(date +"%Y-%m-%d)-`cat tm2/tm2.describe`${BUILD_POSTFIX}.tar.gz
         echo "creating $filename"
         tar czfH ${filename} \
           --exclude=.git* \
@@ -238,7 +238,6 @@ function go {
     if mkdir ${LOCKFILE}; then
         echo 'no lock found, building!'
         init_building
-        update_checkout
         echo 'updating mapnik-packaging checkout'
         git pull
         source MacOSX.sh
