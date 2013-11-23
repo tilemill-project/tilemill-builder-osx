@@ -170,7 +170,7 @@ function rebuild_tm2 {
         ${CURRENT_DIRECTORY}/tm2/node ${CURRENT_DIRECTORY}/tm2/index.js
         ' > start.command
         chmod +x start.command
-        filename=tm2-osx-$(date +"%Y-%m-%d)-`cat tm2/tm2.describe`${BUILD_POSTFIX}.tar.gz
+        filename=tm2-osx-$(date +"%Y-%m-%d")-`cat tm2/tm2.describe`${BUILD_POSTFIX}.tar.gz
         echo "creating $filename"
         tar czfH ${filename} \
           --exclude=.git* \
