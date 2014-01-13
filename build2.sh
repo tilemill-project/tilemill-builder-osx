@@ -250,7 +250,7 @@ function go {
         
         # rebuild apps if needed
         rebuild_node
-        rebuild_mapnik '2.3.x'
+        rebuild_mapnik '2.2.x'
         rebuild_tm2 'master'
         rebuild_tilemill 'master'
 
