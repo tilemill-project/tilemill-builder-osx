@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e -u
 
 FATAL=true
 FORCE=false
@@ -95,10 +96,16 @@ function rebuild_app {
     cp `which node` ./
     echo 'running npm install'
     npm install --build-from-source --sqlite=${BUILD} --runtime_link=static --production --loglevel warn
+    du -h -d 0 node_modules/
+    echo 'running npm dedupe'
+    npm dedupe
+    du -h -d 0 node_modules/
     echo 'cleaning out uneeded items in node_modules'
     clean_node_modules
+    du -h -d 0 node_modules/
     cd ./node_modules/mapnik
     localize_node_mapnik
+    du -h -d 0 node_modules/
 }
 
 function test_app_startup {
@@ -241,7 +248,6 @@ function go {
         echo 'updating mapnik-packaging checkout'
         git pull
         source MacOSX.sh
-        ./scripts/download_deps.sh
         export JOBS=2
 
         # set these to ensure proper linking of all c++ libs
