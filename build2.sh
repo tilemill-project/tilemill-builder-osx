@@ -9,8 +9,9 @@ FORCE_NODE=false
 FORCE_TM2=false
 CXX11=false
 BUILD_POSTFIX=""
-BUILD_BASE=/Volumes/Flex
-THIS_BUILD_ROOT=${BUILD_BASE}/mapnik-packaging/osx
+BUILD_BASE=/tmp
+THIS_BUILD_ROOT=${BUILD_BASE}/build-root
+MP=${THIS_BUILD_ROOT}/mapnik-packaging/osx
 LOCKFILE=${THIS_BUILD_ROOT}/lock-dir
 
 # depends on
@@ -124,19 +125,30 @@ function test_app_startup {
 }
 
 function init_building {
-    if [ ! -d "${THIS_BUILD_ROOT}" ]; then
-        cd ${BUILD_BASE}
-        git clone --depth 1 https://github.com/mapnik/mapnik-packaging.git
-    fi
-    cd ${THIS_BUILD_ROOT}
+    mkdir -p ${THIS_BUILD_ROOT}
     START=`date +"%s"`
     this_day=$(date +"%Y-%m-%d %r")
+    cd ${THIS_BUILD_ROOT}
+    if [ ! -d "${MP}" ]; then
+        echo 'cloning mapnik-packaging'
+        git clone --depth 1 https://github.com/mapnik/mapnik-packaging.git
+        cd $MP
+    else
+        echo 'updating mapnik-packaging checkout'
+        cd $MP
+        git pull
+    fi
+    source MacOSX.sh
+    export JOBS=2
+    # set these to ensure proper linking of all c++ libs
+    # we do not set them by default to avoid linking c libs to libc++
+    export LDFLAGS="${STDLIB_LDFLAGS} ${LDFLAGS}"
 }
 
 function rebuild_node {
     echo 'updating node'
     if [ ! -f ${BUILD}/bin/node ] || $FORCE || $FORCE_NODE; then
-        ./scripts/build_node.sh
+        $MP/scripts/build_node.sh
         FORCE=true
     else
         echo "  skipping node-v${NODE_VERSION} build"
@@ -150,8 +162,9 @@ function rebuild_mapnik {
     git describe > mapnik.describe
     git pull
     if [ `git describe` != `cat mapnik.describe` ] || $FORCE || $FORCE_MAPNIK; then
-        cd ${THIS_BUILD_ROOT}
-        ./scripts/build_mapnik.sh
+        cd ${MP}../
+        source build.sh
+        build_mapnik
         FORCE=true
     else
         echo '  skipping mapnik build'
@@ -162,7 +175,15 @@ function rebuild_tm2 {
     echo 'updating tm2'
     # clear out old tarballs
     rm -f ${THIS_BUILD_ROOT}/tm2-*.tar.gz
-    cd ${THIS_BUILD_ROOT}/tm2
+    if [ ! -d "${THIS_BUILD_ROOT}/tm2" ]; then
+        echo 'cloning tm2'
+        git clone https://github.com/mapbox/tm2.git
+        cd ${THIS_BUILD_ROOT}/tm2
+    else
+        echo 'updating tm2 checkout'
+        cd ${THIS_BUILD_ROOT}/tm2
+        git fetch -v
+    fi
     git checkout $1
     git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
     git pull
@@ -193,7 +214,15 @@ function rebuild_tm2 {
 
 function rebuild_tilemill {
     echo 'updating tilemill'
-    cd ${THIS_BUILD_ROOT}/tilemill
+    if [ ! -d "${THIS_BUILD_ROOT}/tilemill" ]; then
+        echo 'cloning tilemill'
+        git clone https://github.com/mapbox/tilemill.git
+        cd ${THIS_BUILD_ROOT}/tilemill
+    else
+        echo 'updating tilemill checkout'
+        cd ${THIS_BUILD_ROOT}/tilemill
+        git fetch -v
+    fi
     git checkout $1
     git describe > tilemill.describe
     git pull
@@ -242,17 +271,9 @@ function rebuild_tilemill {
 }
 
 function go {
-    if mkdir ${LOCKFILE}; then
+    if mkdir -p ${LOCKFILE}; then
         echo 'no lock found, building!'
         init_building
-        echo 'updating mapnik-packaging checkout'
-        git pull
-        source MacOSX.sh
-        export JOBS=2
-
-        # set these to ensure proper linking of all c++ libs
-        # we do not set them by default to avoid linking c libs to libc++
-        export LDFLAGS="${STDLIB_LDFLAGS} ${LDFLAGS}"
         
         # rebuild apps if needed
         rebuild_node
@@ -262,8 +283,7 @@ function go {
 
         cd ${THIS_BUILD_ROOT}
         if [ ${CXX11} = true ]; then
-            source MacOSX.sh
-            export LDFLAGS="${STDLIB_LDFLAGS} ${LDFLAGS}"
+            init_building
             rebuild_node
             rebuild_mapnik 'master'
             BUILD_POSTFIX="cxx11"
