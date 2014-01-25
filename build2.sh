@@ -163,7 +163,7 @@ function rebuild_mapnik {
         git describe > mapnik.describe
         git pull
         if [ `git describe` != `cat mapnik.describe` ] || $FORCE || $FORCE_MAPNIK; then
-            cd ${MP}../
+            cd ${MP}/../
             source build.sh
             build_mapnik
             FORCE=true
@@ -171,7 +171,7 @@ function rebuild_mapnik {
             echo '  skipping mapnik build'
         fi
     else
-        cd ${MP}../
+        cd ${MP}/../
         source build.sh
         build_mapnik
         FORCE=true
