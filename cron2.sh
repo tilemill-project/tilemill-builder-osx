@@ -12,7 +12,7 @@ git pull
 #
 echo 'sourcing build env'
 source ./build2.sh
-export FATAL=true
+source ./config.sh
 # if the build script changed, force new build
 if [[ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat build.describe` ]]; then
     echo 'forcing build because build script changed'
