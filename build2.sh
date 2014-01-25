@@ -9,7 +9,7 @@ FORCE_NODE=false
 FORCE_TM2=false
 CXX11=false
 BUILD_POSTFIX=""
-BUILD_BASE=/tmp
+BUILD_BASE=/Volumes/Flex
 THIS_BUILD_ROOT=${BUILD_BASE}/build-root
 MP=${THIS_BUILD_ROOT}/mapnik-packaging/osx
 LOCKFILE=${THIS_BUILD_ROOT}/lock-dir
@@ -157,17 +157,24 @@ function rebuild_node {
 
 function rebuild_mapnik {
     echo 'updating mapnik'
-    cd ${MAPNIK_SOURCE}
-    git checkout $1
-    git describe > mapnik.describe
-    git pull
-    if [ `git describe` != `cat mapnik.describe` ] || $FORCE || $FORCE_MAPNIK; then
+    if [ -d ${MAPNIK_SOURCE} ]; then
+        cd ${MAPNIK_SOURCE}
+        git checkout $1
+        git describe > mapnik.describe
+        git pull
+        if [ `git describe` != `cat mapnik.describe` ] || $FORCE || $FORCE_MAPNIK; then
+            cd ${MP}../
+            source build.sh
+            build_mapnik
+            FORCE=true
+        else
+            echo '  skipping mapnik build'
+        fi
+    else
         cd ${MP}../
         source build.sh
         build_mapnik
         FORCE=true
-    else
-        echo '  skipping mapnik build'
     fi
 }
 
