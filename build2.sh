@@ -184,6 +184,7 @@ function rebuild_tm2 {
     rm -f ${THIS_BUILD_ROOT}/tm2-*.tar.gz
     if [ ! -d "${THIS_BUILD_ROOT}/tm2" ]; then
         echo 'cloning tm2'
+        cd ${THIS_BUILD_ROOT}
         git clone https://github.com/mapbox/tm2.git
         cd ${THIS_BUILD_ROOT}/tm2
     else
@@ -223,6 +224,7 @@ function rebuild_tilemill {
     echo 'updating tilemill'
     if [ ! -d "${THIS_BUILD_ROOT}/tilemill" ]; then
         echo 'cloning tilemill'
+        cd ${THIS_BUILD_ROOT}
         git clone https://github.com/mapbox/tilemill.git
         cd ${THIS_BUILD_ROOT}/tilemill
     else
