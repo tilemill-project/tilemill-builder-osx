@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e -u
+set -u
 
 FATAL=true
 FORCE=false
@@ -10,13 +10,10 @@ FORCE_TM2=false
 CXX11=false
 BUILD_POSTFIX=""
 BUILD_BASE=/Volumes/Flex
+#BUILD_BASE=/opt/tm-build
 THIS_BUILD_ROOT=${BUILD_BASE}/build-root
 MP=${THIS_BUILD_ROOT}/mapnik-packaging/osx
 LOCKFILE=${THIS_BUILD_ROOT}/lock-dir
-
-# depends on
-# - mapnik-packaging, tm2, tilemill, and s3cmd being pulled down ahead of time
-# - see setup.sh for details
 
 function exit_if {
   if [ $FATAL = true ]; then
@@ -57,7 +54,27 @@ module.exports.env = {
     cp ${BUILD}/share/icu/*/*dat ./lib/mapnik/share/icu
 }
 
-function clean_node_modules {
+function run_global_deletions {
+    find ./node_modules -name test | xargs rm -rf;
+    find ./node_modules -name tests | xargs rm -rf;
+    find ./node_modules -name tmp | xargs rm -rf;
+    find ./node_modules -name build | xargs rm -rf;
+    find ./node_modules -name src | xargs rm -rf;
+    find ./node_modules -name deps | xargs rm -rf;
+    find ./node_modules -name examples | xargs rm -rf;
+    find ./node_modules -name docs | xargs rm -rf;
+    find ./node_modules -name testdata | xargs rm -rf;
+}
+
+function clean_node_modules_tm2 {
+    # ensure we have only one mapnik included
+    rm -rf ./node_modules/mapnik/node_modules/mapnik-vector-tile
+    rm -rf ./node_modules/mocha
+    rm -rf ./node_modules/jshint
+    run_global_deletions
+}
+
+function clean_node_modules_tm {
     # ensure we have only one mapnik included
     rm -rf ./node_modules/tilelive-mapnik/node_modules/mapnik
     rm -rf ./node_modules/mapnik/node_modules/mapnik-vector-tile
@@ -73,15 +90,7 @@ function clean_node_modules {
     cp "${CONTEXIFY_LOCATION}/contextify.node" ./contextify.node
     NWMATCHER_LOCATION="./node_modules/bones/node_modules/jquery/node_modules/jsdom/node_modules/nwmatcher/src"
     cp -r ${NWMATCHER_LOCATION} ./NW_TMP/
-    find ./node_modules -name test | xargs rm -rf;
-    find ./node_modules -name tests | xargs rm -rf;
-    find ./node_modules -name tmp | xargs rm -rf;
-    find ./node_modules -name build | xargs rm -rf;
-    find ./node_modules -name src | xargs rm -rf;
-    find ./node_modules -name deps | xargs rm -rf;
-    find ./node_modules -name examples | xargs rm -rf;
-    find ./node_modules -name docs | xargs rm -rf;
-    find ./node_modules -name testdata | xargs rm -rf;
+    run_global_deletions
     mkdir -p "${CONTEXIFY_LOCATION}"
     mv ./contextify.node "${CONTEXIFY_LOCATION}/contextify.node"
     mkdir -p ${NWMATCHER_LOCATION}
@@ -96,17 +105,10 @@ function rebuild_app {
     rm -f ./node
     cp `which node` ./
     echo 'running npm install'
-    npm install --build-from-source --sqlite=${BUILD} --runtime_link=static --production --loglevel warn
+    npm install --runtime_link=static
     du -h -d 0 node_modules/
-    echo 'running npm dedupe'
-    npm dedupe
-    du -h -d 0 node_modules/
-    echo 'cleaning out uneeded items in node_modules'
-    clean_node_modules
-    du -h -d 0 node_modules/
-    cd ./node_modules/mapnik
-    localize_node_mapnik
-    du -h -d 0 node_modules/
+    echo 'running npm ls'
+    npm ls
 }
 
 function test_app_startup {
@@ -198,6 +200,13 @@ function rebuild_tm2 {
     if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $FORCE || $FORCE_TM2; then
         git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
         rebuild_app
+        du -h -d 0 node_modules/
+        echo 'cleaning out uneeded items in node_modules'
+        clean_node_modules_tm2
+        du -h -d 0 node_modules/
+        cd ./node_modules/mapnik
+        localize_node_mapnik
+        du -h -d 0 node_modules/
         cd ${THIS_BUILD_ROOT}/tm2
         test_app_startup "tm2"
         # package
@@ -214,7 +223,8 @@ function rebuild_tm2 {
         #ditto -c -k --sequesterRsrc --keepParent --zlibCompressionLevel 9 tm2/ ${ZIP_ARCHIVE}
         UPLOAD="s3://tilemill/dev/${filename}"
         echo "uploading $UPLOAD"
-        ./s3cmd/s3cmd --acl-public put ${filename} ${UPLOAD}
+        ensure_s3cmd
+        s3cmd --acl-public put ${filename} ${UPLOAD}
     else
         echo '  skipping tm2 build'
     fi
@@ -238,6 +248,13 @@ function rebuild_tilemill {
     if [ `git describe` != `cat tilemill.describe` ] || $FORCE || $FORCE_TM; then
         git describe > tilemill.describe
         rebuild_app
+        du -h -d 0 node_modules/
+        echo 'cleaning out uneeded items in node_modules'
+        clean_node_modules_tm
+        du -h -d 0 node_modules/
+        cd ./node_modules/mapnik
+        localize_node_mapnik
+        du -h -d 0 node_modules/
         cd ${THIS_BUILD_ROOT}/tilemill
         test_app_startup "tilemill"
         echo "Building TileMill Mac app..."
@@ -270,7 +287,8 @@ function rebuild_tilemill {
         filename="TileMill-${dev_version}${BUILD_POSTFIX}.zip"
         UPLOAD="s3://tilemill/dev/${filename}"
         echo "uploading $UPLOAD"
-        ../../../s3cmd/s3cmd --acl-public put TileMill.zip ${UPLOAD}
+        ensure_s3cmd
+        s3cmd --acl-public put TileMill.zip ${UPLOAD}
         # TODO - get sparkle private key on the machine
         # https://github.com/mapbox/tilemill-builder-osx/issues/26
         #echo 'Yes' | make sparkle
