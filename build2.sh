@@ -142,7 +142,7 @@ function init_building {
     fi
     source MacOSX.sh
     # put mapnik-config on path
-    export PATH="${MAPNIK_BIN_SOURCE}/bin"
+    export PATH="${MAPNIK_BIN_SOURCE}/bin":$PATH
     export JOBS=2
     # set these to ensure proper linking of all c++ libs
     # we do not set them by default to avoid linking c libs to libc++
