@@ -199,8 +199,12 @@ function rebuild_tm2 {
     git checkout $1
     git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
     git pull
+    CUR_DIR=$(pwd)
     if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $FORCE || $FORCE_TM2; then
         git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
+        export FORCE_MAPNIK=true
+        rebuild_mapnik '2.2.x'
+        cd $CUR_DIR
         rebuild_app
         du -h -d 0 node_modules/
         echo 'cleaning out uneeded items in node_modules'
@@ -247,8 +251,12 @@ function rebuild_tilemill {
     git checkout $1
     git describe > tilemill.describe
     git pull
+    CUR_DIR=$(pwd)
     if [ `git describe` != `cat tilemill.describe` ] || $FORCE || $FORCE_TM; then
         git describe > tilemill.describe
+        export FORCE_MAPNIK=true
+        rebuild_mapnik '2.3.x'
+        cd $CUR_DIR
         rebuild_app
         du -h -d 0 node_modules/
         echo 'cleaning out uneeded items in node_modules'
@@ -306,7 +314,6 @@ function go {
         
         # rebuild apps if needed
         rebuild_node
-        rebuild_mapnik '2.2.x'
         rebuild_tm2 'master'
         rebuild_tilemill 'master'
 
@@ -314,8 +321,7 @@ function go {
         if [ ${CXX11} = true ]; then
             init_building
             rebuild_node
-            rebuild_mapnik 'master'
-            BUILD_POSTFIX="-cxx11"
+            export BUILD_POSTFIX="-cxx11"
             rebuild_tm2 'c++11'
             rebuild_tilemill 'c++11'
             cd ${THIS_BUILD_ROOT}
