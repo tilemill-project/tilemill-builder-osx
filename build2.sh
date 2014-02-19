@@ -322,8 +322,8 @@ function go {
             init_building
             rebuild_node
             export BUILD_POSTFIX="-cxx11"
-            rebuild_tm2 'c++11'
-            rebuild_tilemill 'c++11'
+            rebuild_tm2 'master'
+            rebuild_tilemill 'master'
             cd ${THIS_BUILD_ROOT}
         fi
 
