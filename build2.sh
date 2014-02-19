@@ -105,7 +105,7 @@ function rebuild_app {
     rm -f ./node
     cp `which node` ./
     echo 'running npm install'
-    npm install --runtime_link=static
+    npm install --runtime_link=static --production
     du -h -d 0 node_modules/
     echo 'running npm ls'
     npm ls
