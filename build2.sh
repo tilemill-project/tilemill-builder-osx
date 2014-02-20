@@ -31,7 +31,7 @@ function localize_node_mapnik {
     cp ${MAPNIK_BIN_SOURCE}/lib/libmapnik.dylib lib/
     cp -r ${MAPNIK_BIN_SOURCE}/lib/mapnik lib/
     install_name_tool -id libmapnik.dylib lib/libmapnik.dylib
-    install_name_tool -change /usr/local/lib/libmapnik.dylib @loader_path/libmapnik.dylib lib/_mapnik.node
+    install_name_tool -change /usr/local/lib/libmapnik.dylib @loader_path/libmapnik.dylib lib/binding/mapnik.node
     for lib in `ls lib/mapnik/input/*input`; do
       install_name_tool -change /usr/local/lib/libmapnik.dylib @loader_path/../../libmapnik.dylib $lib;
     done
@@ -55,6 +55,7 @@ module.exports.env = {
 }
 
 function run_global_deletions {
+    find ./node_modules -name node-pre-gyp | xargs rm -rf;
     find ./node_modules -name test | xargs rm -rf;
     find ./node_modules -name tests | xargs rm -rf;
     find ./node_modules -name tmp | xargs rm -rf;
@@ -202,9 +203,9 @@ function rebuild_tm2 {
     CUR_DIR=$(pwd)
     if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $FORCE || $FORCE_TM2; then
         git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
-        export FORCE_MAPNIK=true
-        rebuild_mapnik '2.2.x'
-        cd $CUR_DIR
+        #export FORCE_MAPNIK=true
+        #rebuild_mapnik '2.2.x'
+        #cd $CUR_DIR
         rebuild_app
         du -h -d 0 node_modules/
         echo 'cleaning out uneeded items in node_modules'
@@ -254,9 +255,9 @@ function rebuild_tilemill {
     CUR_DIR=$(pwd)
     if [ `git describe` != `cat tilemill.describe` ] || $FORCE || $FORCE_TM; then
         git describe > tilemill.describe
-        export FORCE_MAPNIK=true
-        rebuild_mapnik '2.3.x'
-        cd $CUR_DIR
+        #export FORCE_MAPNIK=true
+        #rebuild_mapnik '2.3.x'
+        #cd $CUR_DIR
         rebuild_app
         du -h -d 0 node_modules/
         echo 'cleaning out uneeded items in node_modules'
