@@ -28,9 +28,9 @@ function exit_if {
 
 function localize_node_mapnik {
     echo 'localizing mapnik'
-    cp ${MAPNIK_BIN_SOURCE}/lib/libmapnik.dylib lib/
-    cp -r ${MAPNIK_BIN_SOURCE}/lib/mapnik lib/
-    install_name_tool -id libmapnik.dylib lib/libmapnik.dylib
+    cp ${MAPNIK_BIN_SOURCE}/lib/libmapnik.dylib lib/binding/
+    cp -r ${MAPNIK_BIN_SOURCE}/lib/mapnik lib/binding/
+    install_name_tool -id libmapnik.dylib lib/binding/libmapnik.dylib
     install_name_tool -change /usr/local/lib/libmapnik.dylib @loader_path/libmapnik.dylib lib/binding/mapnik.node
     for lib in `ls lib/mapnik/input/*input`; do
       install_name_tool -change /usr/local/lib/libmapnik.dylib @loader_path/../../libmapnik.dylib $lib;
@@ -113,9 +113,11 @@ function rebuild_app {
 }
 
 function test_app_startup {
+    echo "killing any running node processes"
     killall node 2>/dev/null
     killall tilemill-tile 2>/dev/null
     killall tilemill-ui 2>/dev/null
+    echo "Trying to start $1"
     ./index.js 2>/dev/null 1>/dev/null &
     pid=$!
     sleep 15
@@ -207,14 +209,17 @@ function rebuild_tm2 {
         #rebuild_mapnik '2.2.x'
         #cd $CUR_DIR
         rebuild_app
+        echo 'checking node_modules size before cleanup'
         du -h -d 0 node_modules/
         echo 'cleaning out uneeded items in node_modules'
-        clean_node_modules_tm2
+        clean_node_modules_tm
+        echo 'checking node_modules size after cleanup'
         du -h -d 0 node_modules/
         cd ./node_modules/mapnik
         localize_node_mapnik
-        du -h -d 0 node_modules/
         cd ${THIS_BUILD_ROOT}/tm2
+        echo 'checking node_modules size after mapnik localization'
+        du -h -d 0 node_modules/
         test_app_startup "tm2"
         # package
         cd ${THIS_BUILD_ROOT}
@@ -259,14 +264,17 @@ function rebuild_tilemill {
         #rebuild_mapnik '2.3.x'
         #cd $CUR_DIR
         rebuild_app
+        echo 'checking node_modules size before cleanup'
         du -h -d 0 node_modules/
         echo 'cleaning out uneeded items in node_modules'
         clean_node_modules_tm
+        echo 'checking node_modules size after cleanup'
         du -h -d 0 node_modules/
         cd ./node_modules/mapnik
         localize_node_mapnik
-        du -h -d 0 node_modules/
         cd ${THIS_BUILD_ROOT}/tilemill
+        echo 'checking node_modules size after mapnik localization'
+        du -h -d 0 node_modules/
         test_app_startup "tilemill"
         echo "Building TileMill Mac app..."
         cd ./platforms/osx
