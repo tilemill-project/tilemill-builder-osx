@@ -35,7 +35,7 @@ function localize_node_mapnik {
     for lib in `ls lib/mapnik/input/*input`; do
       install_name_tool -change /usr/local/lib/libmapnik.dylib @loader_path/../../libmapnik.dylib $lib;
     done
-    mkdir -p lib/mapnik/share
+    mkdir -p lib/mapnik/binding/share
     echo "
 var path = require('path');
 module.exports.paths = {
@@ -47,11 +47,11 @@ module.exports.env = {
     'GDAL_DATA': path.join(__dirname, 'mapnik/share/gdal'),
     'PROJ_LIB': path.join(__dirname, 'mapnik/share/proj')
 };
-    " > lib/mapnik_settings.js
-    cp -r ${BUILD}/share/proj ./lib/mapnik/share/
-    cp -r ${BUILD}/share/gdal ./lib/mapnik/share/
-    mkdir -p ./lib/mapnik/share/icu
-    cp ${BUILD}/share/icu/*/*dat ./lib/mapnik/share/icu
+    " > lib/binding/mapnik_settings.js
+    cp -r ${BUILD}/share/proj ./lib/binding/mapnik/share/
+    cp -r ${BUILD}/share/gdal ./lib/binding/mapnik/share/
+    mkdir -p ./lib/binding/mapnik/share/icu
+    cp ${BUILD}/share/icu/*/*dat ./lib/binding/mapnik/share/icu
 }
 
 function run_global_deletions {
@@ -96,6 +96,7 @@ function clean_node_modules_tm {
     mv ./contextify.node "${CONTEXIFY_LOCATION}/contextify.node"
     mkdir -p ${NWMATCHER_LOCATION}
     cp -r ./NW_TMP/* ${NWMATCHER_LOCATION}/
+    rm -rf ./NW_TMP/
 }
 
 function rebuild_app {
