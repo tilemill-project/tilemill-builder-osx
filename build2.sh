@@ -32,10 +32,10 @@ function localize_node_mapnik {
     cp -r ${MAPNIK_BIN_SOURCE}/lib/mapnik lib/binding/
     install_name_tool -id libmapnik.dylib lib/binding/libmapnik.dylib
     install_name_tool -change /usr/local/lib/libmapnik.dylib @loader_path/libmapnik.dylib lib/binding/mapnik.node
-    for lib in `ls lib/mapnik/input/*input`; do
+    for lib in `ls lib/binding/mapnik/input/*input`; do
       install_name_tool -change /usr/local/lib/libmapnik.dylib @loader_path/../../libmapnik.dylib $lib;
     done
-    mkdir -p lib/mapnik/binding/share
+    mkdir -p lib/binding/mapnik/share
     echo "
 var path = require('path');
 module.exports.paths = {
