@@ -232,6 +232,7 @@ function rebuild_tm2 {
         echo "creating $filename"
         tar czfH ${filename} \
           --exclude=.git* \
+          --exclude=.DS_Store \
            start.command tm2
         #ditto -c -k --sequesterRsrc --keepParent --zlibCompressionLevel 9 tm2/ ${ZIP_ARCHIVE}
         UPLOAD="s3://tilemill/dev/${filename}"
