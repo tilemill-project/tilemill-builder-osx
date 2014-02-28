@@ -216,7 +216,7 @@ function rebuild_tm2 {
         clean_node_modules_tm
         echo 'checking node_modules size after cleanup'
         du -h -d 0 node_modules/
-        cd ./node_modules/mapnik
+        #cd ./node_modules/mapnik
         #localize_node_mapnik
         cd ${THIS_BUILD_ROOT}/tm2
         echo 'checking node_modules size after mapnik localization'
@@ -271,7 +271,7 @@ function rebuild_tilemill {
         clean_node_modules_tm
         echo 'checking node_modules size after cleanup'
         du -h -d 0 node_modules/
-        cd ./node_modules/mapnik
+        #cd ./node_modules/mapnik
         #localize_node_mapnik
         cd ${THIS_BUILD_ROOT}/tilemill
         echo 'checking node_modules size after mapnik localization'
