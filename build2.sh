@@ -200,7 +200,6 @@ function rebuild_tm2 {
         cd ${THIS_BUILD_ROOT}/tm2
         git fetch -v
     fi
-    git checkout $1
     git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
     git pull
     CUR_DIR=$(pwd)
@@ -256,7 +255,6 @@ function rebuild_tilemill {
         cd ${THIS_BUILD_ROOT}/tilemill
         git fetch -v
     fi
-    git checkout $1
     git describe > tilemill.describe
     git pull
     CUR_DIR=$(pwd)
@@ -325,16 +323,16 @@ function go {
         
         # rebuild apps if needed
         rebuild_node
-        rebuild_tm2 'node-mapnik-1.4'
-        rebuild_tilemill 'node-mapnik-1.4'
+        rebuild_tm2
+        rebuild_tilemill
 
         cd ${THIS_BUILD_ROOT}
         if [ ${CXX11} = true ]; then
             init_building
             rebuild_node
             export BUILD_POSTFIX="-cxx11"
-            rebuild_tm2 'master'
-            rebuild_tilemill 'master'
+            rebuild_tm2
+            rebuild_tilemill
             cd ${THIS_BUILD_ROOT}
         fi
 
