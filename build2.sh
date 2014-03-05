@@ -198,16 +198,11 @@ function rebuild_tm2 {
     else
         echo 'updating tm2 checkout'
         cd ${THIS_BUILD_ROOT}/tm2
-        git fetch -v
+        git pull
     fi
-    git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
-    git pull
     CUR_DIR=$(pwd)
-    if [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $FORCE || $FORCE_TM2; then
+    if [ ! -f tm2.describe ] || [ `git rev-list --max-count=1 HEAD | cut -c 1-7` != `cat tm2.describe` ] || $FORCE || $FORCE_TM2; then
         git rev-list --max-count=1 HEAD | cut -c 1-7 > tm2.describe
-        #export FORCE_MAPNIK=true
-        #rebuild_mapnik '2.2.x'
-        #cd $CUR_DIR
         rebuild_app
         echo 'checking node_modules size before cleanup'
         du -h -d 0 node_modules/
@@ -253,16 +248,11 @@ function rebuild_tilemill {
     else
         echo 'updating tilemill checkout'
         cd ${THIS_BUILD_ROOT}/tilemill
-        git fetch -v
+        git pull
     fi
-    git describe > tilemill.describe
-    git pull
     CUR_DIR=$(pwd)
-    if [ `git describe` != `cat tilemill.describe` ] || $FORCE || $FORCE_TM; then
+    if [ ! -f tilemill.describe ] || [ `git describe` != `cat tilemill.describe` ] || $FORCE || $FORCE_TM; then
         git describe > tilemill.describe
-        #export FORCE_MAPNIK=true
-        #rebuild_mapnik '2.3.x'
-        #cd $CUR_DIR
         rebuild_app
         echo 'checking node_modules size before cleanup'
         du -h -d 0 node_modules/
