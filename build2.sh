@@ -14,6 +14,7 @@ BUILD_BASE=/Volumes/Flex
 THIS_BUILD_ROOT=${BUILD_BASE}/build-root
 MP=${THIS_BUILD_ROOT}/mapnik-packaging/osx
 LOCKFILE=${THIS_BUILD_ROOT}/lock-dir
+MAPNIK_FROM_SOURCE=false
 
 function exit_if {
   if [ $FATAL = true ]; then
@@ -107,7 +108,11 @@ function rebuild_app {
     rm -f ./node
     cp `which node` ./
     echo 'running npm install'
-    npm install --runtime_link=static --production
+    if [[ ${MAPNIK_FROM_SOURCE} == true ]]; then
+        npm install --runtime_link=static --production --build-from-source=mapnik
+    else
+        npm install --runtime_link=static --production
+    fi
     du -h -d 0 node_modules/
     echo 'running npm ls'
     npm ls
@@ -210,8 +215,10 @@ function rebuild_tm2 {
         clean_node_modules_tm
         echo 'checking node_modules size after cleanup'
         du -h -d 0 node_modules/
-        #cd ./node_modules/mapnik
-        #localize_node_mapnik
+        if [[ ${MAPNIK_FROM_SOURCE} == true ]]; then
+            cd ./node_modules/mapnik
+            localize_node_mapnik
+        fi
         cd ${THIS_BUILD_ROOT}/tm2
         echo 'checking node_modules size after mapnik localization'
         du -h -d 0 node_modules/
@@ -260,8 +267,10 @@ function rebuild_tilemill {
         clean_node_modules_tm
         echo 'checking node_modules size after cleanup'
         du -h -d 0 node_modules/
-        #cd ./node_modules/mapnik
-        #localize_node_mapnik
+        if [[ ${MAPNIK_FROM_SOURCE} == true ]]; then
+            cd ./node_modules/mapnik
+            localize_node_mapnik
+        fi
         cd ${THIS_BUILD_ROOT}/tilemill
         echo 'checking node_modules size after mapnik localization'
         du -h -d 0 node_modules/
@@ -310,20 +319,20 @@ function go {
     if mkdir -p ${LOCKFILE}; then
         echo 'no lock found, building!'
         init_building
-        
-        # rebuild apps if needed
-        rebuild_node
-        rebuild_tm2
-        rebuild_tilemill
-
-        cd ${THIS_BUILD_ROOT}
         if [ ${CXX11} = true ]; then
+            export MAPNIK_FROM_SOURCE=true
+            export BUILD_POSTFIX="-cxx11"
             init_building
             rebuild_node
-            export BUILD_POSTFIX="-cxx11"
+            rebuild_mapnik "master"
             rebuild_tm2
             rebuild_tilemill
             cd ${THIS_BUILD_ROOT}
+        else
+            # rebuild apps if needed
+            rebuild_node
+            rebuild_tm2
+            rebuild_tilemill
         fi
 
         cd ${THIS_BUILD_ROOT}
