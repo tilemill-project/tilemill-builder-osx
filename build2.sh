@@ -333,6 +333,9 @@ function go {
         else
             # rebuild apps if needed
             rebuild_node
+            if [[ ${MAPNIK_FROM_SOURCE} == true ]]; then
+                rebuild_mapnik "2.3.x"
+            fi
             rebuild_tm2
             rebuild_tilemill
         fi
