@@ -58,6 +58,7 @@ module.exports.env = {
 function run_global_deletions {
     # node-pre-gyp is now a runtime dep of node-sqlite3
     #find ./node_modules -name node-pre-gyp | xargs rm -rf;
+    find ./node_modules -name nan | xargs rm -rf;
     find ./node_modules -name scripts | xargs rm -rf;
     find ./node_modules -name test | xargs rm -rf;
     find ./node_modules -name tests | xargs rm -rf;
